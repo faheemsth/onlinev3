@@ -1,0 +1,7 @@
+accession_number,ddc_number,book,subject_code,author,book_category,book_publisher,book_pages,book_year,book_binding,book_source,price,book_volume,quantity,classesID,book_remarks,rack
+101,613.2 WHI,Understanding Nutrition Set ,HND-01-RK-2-001,Whitney Rolfes,BS-Human Nutrition & Dietetics,dummy,500,2002,PB,Purchase,50,14th,1,12,test,1
+102,613.2 WHI,Understanding Nutrition Set ,HND-01-RK-2-002,Whitney Rolfes,BS-Human Nutrition & Dietetics,dummy,500,2020,PB,Purchase,20,14th,1,0,test,2
+103,613.2 WHI,Understanding Nutrition Set ,HND-01-RK-2-003,Whitney Rolfes,BS-Human Nutrition & Dietetics,dummy,520,2022,PB,Purchase,30,14th,0,0,test,3
+104,613.2 HOS,Hospital Dietectics,HND-02-RK-2-001,AIOU Isd,BS-Human Nutrition & Dietetics,dummy,320,2021,PB,Purchase,30,0,1,71,test,4
+105,336.8 RED,Basic Food Science and Technology ,HND-03-RK-2-001,Reddy,BS-Human Nutrition & Dietetics,dummy,360,1220,PB,Purchase,20,1st,1,72,test,5
+106,336.8 RED,Basic Food Science and Technology ,HND-03-RK-2-002,Reddy,BS-Human Nutrition & Dietetics,dummy,369,210,PB,Purchase,210,1st,1,22,asdf,6
