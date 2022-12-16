@@ -414,7 +414,7 @@
                     'srschoolyearID' => $schoolyearID
                 ]);
                 if ( customCompute($getLoginStudent) ) {
-                    $subjects = $this->subject_m->get_order_by_subject([ 'classesID' => $getLoginStudent->srclassesID ]);
+                    $subjects = $this->subject_m->get_order_by_subject([ 'sectionID' => $getLoginStudent->srsectionID ]);
                     $invoices = $this->maininvoice_m->get_order_by_maininvoice([
                         'maininvoicestudentID'    => $getLoginStudent->srstudentID,
                         'maininvoiceschoolyearID' => $schoolyearID,

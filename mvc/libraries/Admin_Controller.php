@@ -59,6 +59,7 @@ class Admin_Controller extends MY_Controller {
         $this->data['allcountry']           = $this->getAllCountry();
         $this->data['allbloodgroup']        = $this->_bloodGroup();
         $this->data['myclass']              = $this->_classManager($userTypeID);
+        $this->data['mysection']            = $this->_sectionManager($userTypeID);
         $this->data['schoolyearobj']        = $this->schoolyear_m->get_obj_schoolyear($siteInfo->school_year);
         $this->data['schoolyearsessionobj'] = $this->schoolyear_m->get_obj_schoolyear($this->session->userdata('defaultschoolyearID'));
         $this->data['topbarschoolyears']    = $this->schoolyear_m->get_order_by_schoolyear([ 'schooltype' => 'classbase' ]);
@@ -74,6 +75,21 @@ class Admin_Controller extends MY_Controller {
             ]);
             if ( customCompute($student) ) {
                 return $student->srclassesID;
+            }
+            return 0;
+        }
+        return 0;
+    }
+    Private function _sectionManager( $userTypeID )
+    {
+        if ( $userTypeID == 3 ) {
+            $this->load->model('studentrelation_m');
+            $student = $this->studentrelation_m->get_single_student([
+                'srstudentID'    => $this->session->userdata('loginuserID'),
+                'srschoolyearID' => $this->session->userdata('defaultschoolyearID')
+            ]);
+            if ( customCompute($student) ) {
+                return $student->srsectionID;
             }
             return 0;
         }

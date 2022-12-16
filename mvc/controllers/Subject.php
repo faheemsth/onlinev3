@@ -40,9 +40,11 @@ Class Subject extends Admin_Controller {
 		);
 
 		if($this->session->userdata('usertypeID') == 3) {
-			$id = $this->data['myclass'];
+			$id 		= $this->data['myclass'];
+			$sec_id 	= $this->data['mysection'];
 		} else {
-			$id = htmlentities(escapeString($this->uri->segment(3)));
+			$id 		= htmlentities(escapeString($this->uri->segment(3)));
+			$sec_id 	= 0;
 		}
 
 		if((int)$id) {
@@ -51,15 +53,18 @@ Class Subject extends Admin_Controller {
 			$this->data['classes'] = $this->student_m->get_classes();
 			$fetchClass = pluck($this->data['classes'], 'classesID', 'classesID');
 			if(isset($fetchClass[$id])) {
-
-				$sections = $this->section_m->general_get_order_by_section(array("classesID" => $id));
+				$ar_get 	 = array('classesID' => $id );
+				if ($sec_id>0) {
+					$ar_get['sectionID']	=	$sec_id;
+				}
+				$sections = $this->section_m->general_get_order_by_section($ar_get);
 					$this->data['sections'] = $sections;
 					foreach ($sections as $key => $section) {
 						$this->data['allsection'][$section->sectionID] =  
 							$this->subject_m->general_get_order_by_subject(array('classesID' => $id, "sectionID" => $section->sectionID));
 						;
 					}
-				$this->data['subjects'] = $this->subject_m->general_get_order_by_subject(array('classesID' => $id));
+				$this->data['subjects'] = $this->subject_m->general_get_order_by_subject($ar_get);
 				$this->data['subjectteachers'] = pluck_multi_array($this->subjectteacher_m->get_order_by_subjectteacher(array('classesID' => $id)), 'teacherID', 'subjectID');
 				$this->data["subview"] = "subject/index";
 				$this->load->view('_layout_main', $this->data);

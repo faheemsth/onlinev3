@@ -53,7 +53,8 @@ class Dashboard extends Api_Controller
 		if($this->session->userdata('usertypeID') == 3) {
 			$getLoginStudent = $this->studentrelation_m->get_single_student(array('srstudentID' => $loginuserID, 'srschoolyearID' => $schoolyearID));
 			if(customCompute($getLoginStudent)) {
-				$subjects	 = $this->subject_m->get_order_by_subject(array('classesID' => $getLoginStudent->srclassesID));
+				$subjects	 = $this->subject_m->get_order_by_subject(array('sectionID' => $getLoginStudent->srsectionID));
+				
 				$invoices	 = $this->maininvoice_m->get_order_by_maininvoice(array('maininvoicestudentID' => $getLoginStudent->srstudentID, 'maininvoiceschoolyearID' => $schoolyearID, 'maininvoicedeleted_at' => 1));
 				$lmember     = $this->lmember_m->get_single_lmember(array('studentID' => $getLoginStudent->srstudentID));
 			} else {
@@ -64,7 +65,7 @@ class Dashboard extends Api_Controller
 			$invoices	= $this->maininvoice_m->get_order_by_maininvoice(array('maininvoiceschoolyearID' => $schoolyearID, 'maininvoicedeleted_at'=> 1));
 			$subjects	= $this->subject_m->get_subject();
 		}
-
+		
 		$widgetArray['dashboardWidget']['students']    = customCompute($students);
 		$widgetArray['dashboardWidget']['classes']     = customCompute($classes);
 		$widgetArray['dashboardWidget']['teachers']    = customCompute($teachers);

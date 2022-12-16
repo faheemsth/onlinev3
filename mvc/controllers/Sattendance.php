@@ -1169,16 +1169,24 @@ class Sattendance extends Admin_Controller {
 			$this->data['leaveapplications'] = $this->leave_applications_date_list_by_user_and_schoolyear($id,$schoolyearID);
 			
 			if($this->data['setting']->attendance == "subject") {
-				$this->data["subjects"] = $this->subject_m->general_get_order_by_subject(array("classesID" => $url));
+				$this->data["subjects"] = $this->subject_m->general_get_order_by_subject(array("classesID" => $url,"sectionID" => $this->data['mysection']));
 			}
 
 			$this->data["student"] = $this->studentrelation_m->get_single_student(array('srstudentID' => $id, 'srclassesID' => $url, 'srschoolyearID' => $schoolyearID));
+
+			if($this->data['setting']->attendance == "subject") {
+				$this->data["subjects"] = $this->subject_m->general_get_order_by_subject(array("classesID" => $url,"sectionID" => $this->data['student']->sectionID));
+			}
+
 			$this->data["classes"] = $this->classes_m->get_single_classes(array('classesID' => $url));
 			if(customCompute($this->data["student"]) && customCompute($this->data["classes"])) {
+
 				$this->data['set'] = $url;
 				$this->data["usertype"] = $this->usertype_m->get_single_usertype(array('usertypeID' => $this->data["student"]->usertypeID));
 				if($this->data['setting']->attendance == "subject") {
+
 					$attendances = $this->subjectattendance_m->get_order_by_sub_attendance(array("studentID" => $id, "classesID" => $url,'schoolyearID'=> $schoolyearID));
+
 					$this->data['attendances_subjectwisess'] = pluck_multi_array_key($attendances, 'obj', 'subjectID', 'monthyear');
 				} else {
 					$attendances = $this->sattendance_m->get_order_by_attendance(array("studentID" => $id, "classesID" => $url,'schoolyearID'=> $schoolyearID));
