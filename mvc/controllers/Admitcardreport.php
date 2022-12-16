@@ -371,7 +371,7 @@ class Admitcardreport extends Admin_Controller {
 					$schoolyearID = $this->session->userdata('defaultschoolyearID');
 					$queryArray = $this->queryArray($this->input->post());
 					$students   = $this->studentrelation_m->general_get_order_by_student($queryArray);
-					$subjects   = $this->subject_m->general_get_order_by_subject(array('classesID'=>$classesID)); 
+					$subjects   = $this->subject_m->general_get_order_by_subject(array('sectionID'=>$sectionID)); 
 					$exambyID   = $this->exam_m->get_exam($examID);
 					$classes    = $this->classes_m->general_get_classes();
 					$sections   = $this->section_m->general_get_section();

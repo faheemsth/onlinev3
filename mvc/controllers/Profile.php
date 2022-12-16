@@ -261,7 +261,7 @@ class Profile extends Admin_Controller {
 				$this->data['setting'] = $this->setting_m->get_setting();
 
 				if($this->data['setting']->attendance == "subject") {
-					$this->data["attendancesubjects"] = $this->subject_m->get_order_by_subject(array("classesID" => $getUser->srclassesID));
+					$this->data["attendancesubjects"] = $this->subject_m->get_order_by_subject(array("classesID" => $getUser->srclassesID,"sectionID" => $getUser->srsectionID));
 					$uattendances = $this->subjectattendance_m->get_order_by_sub_attendance(array("studentID" => $getUser->srstudentID, "classesID" => $getUser->srclassesID, 'schoolyearID'=> $schoolyearID));
 					$this->data['attendances_subjectwisess'] = pluck_multi_array_key($uattendances, 'obj', 'subjectID', 'monthyear');
 				} else {
@@ -362,7 +362,8 @@ class Profile extends Admin_Controller {
 				$marks             = $this->mark_m->student_all_mark_array($queryArray);
 				$markpercentages   = $this->markpercentage_m->get_markpercentage();
 
-				$subjects          = $this->subject_m->general_get_order_by_subject(array('classesID' => $classesID));
+				$subjects          = $this->subject_m->general_get_order_by_subject(array('classesID' => $classesID,'sectionID' => $student->srsectionID));
+
 				$subjectArr        = [];
 				$optionalsubjectArr= [];
 				if(customCompute($subjects)) {
@@ -400,6 +401,7 @@ class Profile extends Admin_Controller {
 				$this->data['marks']             = $retMark;
 				$this->data['highestmarks']      = $highestMarks;
 				$this->data['marksettings']      = isset($marksettings[$classesID]) ? $marksettings[$classesID] : [];
+
 			} else {
 				$this->data['settingmarktypeID'] = 0;
 				$this->data['subjects']          = [];

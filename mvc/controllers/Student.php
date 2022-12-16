@@ -289,12 +289,13 @@ class Student extends Admin_Controller {
 		if(customCompute($studentInfo)) {
 			$this->data['setting'] = $this->setting_m->get_setting();
 			if($this->data['setting']->attendance == "subject") {
-				$this->data["attendancesubjects"] = $this->subject_m->general_get_order_by_subject(array("classesID" => $studentInfo->srclassesID));
+				$this->data["attendancesubjects"] = $this->subject_m->general_get_order_by_subject(array("sectionID" => $studentInfo->srsectionID));
 			}
 
 			if($this->data['setting']->attendance == "subject") {
 				$attendances = $this->subjectattendance_m->get_order_by_sub_attendance(array("studentID" => $studentInfo->srstudentID, "classesID" => $studentInfo->srclassesID));
 				$this->data['attendances_subjectwisess'] = pluck_multi_array_key($attendances, 'obj', 'subjectID', 'monthyear');
+
 			} else {
 				$attendances = $this->sattendance_m->get_order_by_attendance(array("studentID" => $studentInfo->srstudentID, "classesID" => $studentInfo->srclassesID));
 				$this->data['attendancesArray'] = pluck($attendances,'obj','monthyear');
@@ -1193,10 +1194,12 @@ class Student extends Admin_Controller {
 				}
 				if ($numric_code!=0) {
 					$searcharray['section.numric_code'] 	=	$numric_code;
+					
 				}
 				if (1) {
 					$feess_balance = $this->input->post("feess_balance");
 					$percentage = $this->input->post("charges_ammount");
+					$searcharray['student.active'] 			=	[0,1];
 					$students = $this->student_m->get_student_all_join_by_array('studentID,student.classesID,student.sectionID,total_fee,discount,net_fee,balance,section,accounts_reg',$searcharray);
 
 				$ref_no = $this->invoice_m->get_invoice_ref_by_date($from_date);

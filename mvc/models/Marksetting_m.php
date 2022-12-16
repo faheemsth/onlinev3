@@ -165,7 +165,16 @@ class Marksetting_m extends MY_Model {
 
 		$classes    = $this->classes_m->get_order_by_classes(['classesID !='=> $exclassID]);
 		$exams      = $this->exam_m->get_exam();
-		$subjects   = pluck_multi_array($this->subject_m->get_subject(), 'obj', 'classesID');
+		$usertypeID 	= $this->session->userdata("usertypeID");
+		$loginuserID 	= $this->session->userdata('loginuserID');
+		if ($usertypeID==3) {
+			$arrayName = array('sectionID' => $this->data['mysection']);
+			$tt_subs 	=	$this->subject_m->general_get_order_by_subject($arrayName);
+		}else{
+			$tt_subs 	=	$this->subject_m->get_subject();
+		}
+
+		$subjects   = pluck_multi_array($tt_subs, 'obj', 'classesID');
 		
 		$marksettingrelations          = $this->get_marksetting_with_marksettingrelation();
 		$retglobalmarksettingArr       = [];
@@ -189,6 +198,7 @@ class Marksetting_m extends MY_Model {
 		}
 
 		$retMarkpercentages = [];
+		 
 		if(customCompute($classes)) {
 			foreach ($classes as $class) {
 				if($marktypeID == 0) {
