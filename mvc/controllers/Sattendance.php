@@ -295,7 +295,10 @@ class Sattendance extends Admin_Controller {
 				} else {
 					$rules = $this->rules();
 				}
-
+				if(!permissionChecker( 'can_edit_attendance'))
+				{
+					unset($rules[3]);
+				}
 				$this->form_validation->set_rules($rules);
 				if ($this->form_validation->run() == FALSE) {
 					$this->data["subview"] = "sattendance/add";
@@ -319,8 +322,14 @@ class Sattendance extends Admin_Controller {
 					if($sectionID !=0) {
 						$this->data['sectionID'] = $sectionID;
 					}
-
-					$date = $this->input->post("date");
+					if(permissionChecker( 'can_edit_attendance'))
+						{ 
+						  $date = $this->input->post("date");
+                         }
+                     else{
+                           $date = date('d-m-Y');
+                          } 
+					
 					$this->data['set'] = $classesID;
 					$this->data['date'] = $date;
 					$explode_date = explode("-", $date);
