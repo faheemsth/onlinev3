@@ -316,7 +316,10 @@
 
 
     <?php 
-    if(permissionChecker('admission')) {  ?>
+    if(permissionChecker('admission')) { 
+        if (count($allclasses)) {
+            
+     ?>
    
 
             
@@ -410,7 +413,9 @@
 <!-- end of container -->
 
     <?php   
-        } ?>
+        } 
+        } 
+        ?>
 
         <?php if($getActiveUserID == 1 || $getActiveUserID == 5 || $getActiveUserID == 18) { ?>
      

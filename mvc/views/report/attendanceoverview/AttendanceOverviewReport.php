@@ -141,6 +141,7 @@
                                                     ?>
                                                         <td data-title="<?=$this->lang->line('attendanceoverviewreport_'."$j")?>">
                                                             <?php 
+                                                             
                                                                 if(in_array($currentDate, $getHolidays)) {
                                                                     echo "<span class='ini-text-holiday'>H</span>";
                                                                     $holidayCount++;

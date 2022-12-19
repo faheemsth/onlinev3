@@ -618,10 +618,11 @@
             $this->data['holidays'] = $holidays;
             $this->data['events']   = $events;
             $this->data['classes']  = $classes;
-            $this->data['allclasses']  = $this->classes_m->get_classes();
+          //  $this->data['allclasses']  = $this->classes_m->get_classes();
+            $this->data['allclasses']  = array();
 
             foreach ($this->classes_m->get_classes() as $c) {
-               
+             /*  
             $array = array('program1' => $c->classesID,'status' => 'Pending','hide_status' => 1,' DATE(time) >='=>'2022-07-01' );
             $pending    =   $this->dashboard_m->get_admission_by_array($array);
 
@@ -637,6 +638,7 @@
             $this->data['dashboardWidget'][$c->classesID]['ad_in_Confirmed']    = customCompute($in_Confirmed);
             $this->data['dashboardWidget'][$c->classesID]['ad_in_process']      = customCompute($in_process);
             $this->data['dashboardWidget'][$c->classesID]['ad_pending']         = customCompute($pending);
+            */
             }
         }
 
