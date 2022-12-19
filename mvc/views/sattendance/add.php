@@ -72,7 +72,14 @@
                                     <div class="col-md-3">
                                         <div class="<?php echo form_error('date') ? 'form-group has-error' : 'form-group'; ?>" >
                                             <label class="control-label"><?=$this->lang->line('attendance_date')?> <span class="text-red">*</span></label>
-                                            <input type="text" class="form-control" name="date" id="date" value="<?=set_value("date", $date)?>" >
+                                            <?php if(permissionChecker( 'can_edit_attendance')){
+                                                $disable= '';
+
+                                            }
+                                            else{
+                                                $disable= 'disabled';
+                                            } ?>
+                                            <input type="text" class="form-control" name="date" id="date" value="<?=set_value("date", $date)?>" <?php echo $disable ?> >
                                         </div>
                                     </div>
                                 </div>
