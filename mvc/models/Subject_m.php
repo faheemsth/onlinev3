@@ -31,6 +31,28 @@ class Subject_m extends MY_Model {
 		}
 	}
 
+	public function get_subject_wherein_subjectID_array($array=NULL){
+		 
+		$this->db->select("*");
+		$this->db->from('subject'); 
+		if (count($array)) {
+ 
+
+			if (isset($array['subjectID'])) {
+				 $this->db->where_in('subjectID', $array['subjectID']);
+					unset($array['subjectID']);
+			}
+			 
+
+		 
+
+			
+			$this->db->where($array);
+		}
+		$query = $this->db->get();
+		return $query->result();
+	}
+
 	public function general_get_subject($array=NULL, $signal=FALSE) {
 		$query = parent::get($array, $signal);
 		return $query;

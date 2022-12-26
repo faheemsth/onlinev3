@@ -141,19 +141,37 @@
                             <tr>
                                 <th class="col-sm-2"><?=$this->lang->line('slno')?></th>
                                 <th class="col-sm-2">Student</th>
+                                <th class="col-sm-2">Class</th>
+                                <th class="col-sm-2">Semester</th>
+                                <th class="col-sm-2">Accounts No.</th>
+                                <th class="col-sm-2">Register No.</th>
                                 <?php if(permissionChecker('subjectenrollment_edit') || permissionChecker('subjectenrollment_delete') || permissionChecker('subjectenrollment_view')) { ?>
                                     <th class="col-sm-2"><?=$this->lang->line('action')?></th>
                                 <?php } ?>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if(count($subjectenrollments)) {$i = 1; foreach($subjectenrollments as $subjectenrollment) { ?>
+                            <?php if(count($subjectenrollments)) {$i = 1; foreach($subjectenrollments as $subjectenrollment) {
+                                 
+                             ?>
                                 <tr>
                                     <td data-title="<?=$this->lang->line('slno')?>">
                                         <?php echo $i; ?>
                                     </td>
                                     <td data-title="<?=$this->lang->line('subjectenrollment_title')?>">
                                         <?=$subjectenrollment->name;?>
+                                    </td>
+                                    <td data-title="<?=$this->lang->line('subjectenrollment_title')?>">
+                                        <?=$classes_pluck[$subjectenrollment->classesID]->classes;?>
+                                    </td>
+                                    <td data-title="<?=$this->lang->line('subjectenrollment_title')?>">
+                                        <?=$section_pluck[$subjectenrollment->sectionID]->section;?>
+                                    </td>
+                                    <td data-title="Accounts No">
+                                        <?=$subjectenrollment->accounts_reg;?>
+                                    </td>
+                                    <td data-title="Register No">
+                                        <?=$subjectenrollment->registerNO;?>
                                     </td>
                                     <?php if(permissionChecker('subjectenrollment_edit') || permissionChecker('subjectenrollment_delete') || permissionChecker('subjectenrollment_view')) { ?>
 

@@ -183,6 +183,14 @@ class Subjectenrollment extends Admin_Controller {
             }
         }
 
+        $section = $this->section_m->get_section();
+        $section = pluck($section, "obj", "sectionID");
+        $this->data["section_pluck"] = $section;
+
+
+        $classess = $this->classes_m->get_classes();
+        $classes = pluck($classess, "obj", "classesID");
+        $this->data["classes_pluck"] = $classes;
         $this->data["classes"] = $this->classes_m->general_get_classes();
         $this->data['subjectenrollments'] = $this->subjectenrollment_m->get_subjectenrollment_join_student_by_array($array);
         $this->data["subview"] = "/subjectenrollment/index";

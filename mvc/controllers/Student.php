@@ -47,6 +47,7 @@ class Student extends Admin_Controller {
         $this->load->model("globalpayment_m");
         $this->load->model("payment_m");
         $this->load->model("weaverandfine_m");
+        $this->load->model("courseoption_m");
 		$language = $this->session->userdata('lang');
 
         $this->lang->load("attendanceoverviewreport", $language);
@@ -91,7 +92,9 @@ class Student extends Admin_Controller {
 		if(isset($fetchClasses[$url])) {
 			if((int)$id && (int)$url) {
 				$studentInfo = $this->studentrelation_m->get_single_student(array('srstudentID' => $id, 'srclassesID' => $url, 'srschoolyearID' => $schoolyearID), TRUE);
+				$this->data['total_fee'] = $this->courseoption_m->get_sum_label_amount_order_by_array(array('salary_templateID' => $studentInfo->fee_structureID))->total_fee;
 				// $studentInfo->balance;
+				//var_dump( $studentInfo->fee_structureID);
 				
 				
 				$this->pluckInfo();
@@ -455,165 +458,8 @@ class Student extends Admin_Controller {
 
 					
 
-					$rows = $this->student_m->get_numrows('invoice',$data);
-					$student_data = $this->student_m->get_single_username('student', array('studentID' => $userID));
-					
-					if ($rows > 0) {
-						$maininvoice_result = $this->maininvoice_m->get_maininvoice_with_cpv($userID,'DESC','invoice');
-						
-						$total_net = 0;
-						if(customCompute($maininvoice_result)){
-							$result = $this->student_m->update_student(array('discount' => $total_discount, 'net_fee' => $net_fee, 'total_fee' => $totalfee),$userID);
-
-							foreach ($maininvoice_result as $invoice){
-								if ($invoice->maininvoicestatus == 1 || $invoice->maininvoicestatus == 0){
-									$this->data['invoices'] = $this->invoice_m->get_order_by_invoice(array('maininvoiceID' => $invoice->maininvoiceID, 'deleted_at' => 1));
-									if ($totaldiscount < $invoice->maininvoicenet_fee && $totaldiscount > 0) {
-										$total_net = $invoice->maininvoicenet_fee - $totaldiscount;
-										$new_discounts = $invoice->maininvoice_discount + $totaldiscount;
-									 	$this->maininvoice_m->update_maininvoice(['maininvoicestatus' => 1, 'maininvoicecreate_date' => $date, 'maininvoice_discount' =>  $new_discounts, 'maininvoicenet_fee' => $total_net],$invoice->maininvoiceID);
-									 	$paidstatus = 1;
-                                    	$this->invoice_m->update_invoice(array('paidstatus' => $paidstatus,'create_date' => $date, 'discount' => $new_discounts , 'net_fee' => $total_net), $this->data['invoices'][0]->invoiceID);
-                                    	$globalpayment = array(
-                                            'classesID' => $classesID,
-                                            'sectionID' => $invoice->maininvoicesectionID,
-                                            'studentID' => $studentID,
-                                            'clearancetype' => 'partial',
-                                            'invoicename' => $student_data->registerNO .'-'. $student_data->name,
-                                            'invoicedescription' => '',
-                                            'paymentyear' => date("Y", strtotime($date)),
-                                            'schoolyearID' => 1,
-                                        );
-                                        $this->globalpayment_m->insert_globalpayment($globalpayment);
-                                    	$globalLastID = $this->db->insert_id();
-                                        $paymentArray = array(
-                                            'invoiceID' => $this->data['invoices'][0]->invoiceID,
-                                        	'schoolyearID' => 1,
-                                            'studentID' => $studentID,
-                                            'paymentamount' => 0,
-                                            'paymenttype' => 'Bank',
-                                            'paymentdate' => $date,
-                                            'paymentday' => date("d", strtotime($date)),
-                                            'paymentmonth' => date("m", strtotime($date)),
-                                            'paymentyear' => date("Y", strtotime($date)),
-                                            'userID' => $this->session->userdata('loginuserID'),
-                                            'usertypeID' => $this->session->userdata('usertypeID'),
-                                            'uname' => $this->session->userdata('name'),
-                                            'transactionID' => 'CASHANDCHEQUE'.random19(),
-                                            'globalpaymentID' => $globalLastID,
-                                        );           
-                                        $this->payment_m->insert_payment($paymentArray);
-                                        $paymentLastID = $this->db->insert_id();
-                                     	$weaverandfineArray = array(
-                                            'globalpaymentID' => $globalLastID,
-                                            'invoiceID' => $this->data['invoices'][0]->invoiceID,
-                                            'paymentID' => $paymentLastID,
-                                            'studentID' => $studentID,
-                                            'schoolyearID' => 1,
-                                            'weaver' => $totaldiscount,
-                                            'fine' => 0,
-                                        );
-                                        $this->weaverandfine_m->insert_weaverandfine($weaverandfineArray);
-                                        $totaldiscount = 0;
-								 	}else if($totaldiscount == $invoice->maininvoicenet_fee && $totaldiscount > 0){
-								 		$total_net = $totaldiscount - $invoice->maininvoicenet_fee;
-								 		$new_discount = $invoice->maininvoice_discount + $totaldiscount;
-								 		$this->maininvoice_m->update_maininvoice(['maininvoicestatus' => 2, 'maininvoicecreate_date' => $date, 'maininvoice_discount' =>  $new_discount, 'maininvoicenet_fee' => $total_net],$invoice->maininvoiceID);
-							 		 	$paidstatus = 2;
-                                    	$this->invoice_m->update_invoice(array('paidstatus' => $paidstatus,'create_date' => $date, 'discount' => $new_discount , 'net_fee' => $total_net), $this->data['invoices'][0]->invoiceID);
-                                    	$globalpayment = array(
-                                            'classesID' => $classesID,
-                                            'sectionID' => $invoice->maininvoicesectionID,
-                                            'studentID' => $studentID,
-                                            'clearancetype' => 'partial',
-                                            'invoicename' => $student_data->registerNO .'-'. $student_data->name,
-                                            'invoicedescription' => '',
-                                            'paymentyear' => date("Y", strtotime($date)),
-                                            'schoolyearID' => 1,
-                                        );
-                                        $this->globalpayment_m->insert_globalpayment($globalpayment);
-                                    	$globalLastID = $this->db->insert_id();
-                                        $paymentArray = array(
-                                            'invoiceID' => $this->data['invoices'][0]->invoiceID,
-                                        	'schoolyearID' => 1,
-                                            'studentID' => $studentID,
-                                            'paymentamount' => 0,
-                                            'paymenttype' => 'Bank',
-                                            'paymentdate' => $date,
-                                            'paymentday' => date("d", strtotime($date)),
-                                            'paymentmonth' => date("m", strtotime($date)),
-                                            'paymentyear' => date("Y", strtotime($date)),
-                                            'userID' => $this->session->userdata('loginuserID'),
-                                            'usertypeID' => $this->session->userdata('usertypeID'),
-                                            'uname' => $this->session->userdata('name'),
-                                            'transactionID' => 'CASHANDCHEQUE'.random19(),
-                                            'globalpaymentID' => $globalLastID,
-                                        );           
-                                        $this->payment_m->insert_payment($paymentArray);
-                                        $paymentLastID = $this->db->insert_id();
-                                     	$weaverandfineArray = array(
-                                            'globalpaymentID' => $globalLastID,
-                                            'invoiceID' => $this->data['invoices'][0]->invoiceID,
-                                            'paymentID' => $paymentLastID,
-                                            'studentID' => $studentID,
-                                            'schoolyearID' => 1,
-                                            'weaver' => $totaldiscount,
-                                            'fine' => 0,
-                                        );
-                                        $this->weaverandfine_m->insert_weaverandfine($weaverandfineArray);
-                                        $totaldiscount = 0;
-								 	}else if ($totaldiscount > $invoice->maininvoicenet_fee && $totaldiscount > 0) {
-								 		$total_discount = $totaldiscount - $invoice->maininvoicenet_fee;
-								 		$discounts = $invoice->maininvoicenet_fee + $invoice->maininvoice_discount;
-								 		$this->maininvoice_m->update_maininvoice(['maininvoicestatus' => 2, 'maininvoicecreate_date' => $date, 'maininvoice_discount' =>  $discounts, 'maininvoicenet_fee' => 0],$invoice->maininvoiceID);
-								 		$paidstatus = 2;
-                                    	$this->invoice_m->update_invoice(array('paidstatus' => $paidstatus,'create_date' => $date, 'discount' => $discounts , 'net_fee' => 0), $this->data['invoices'][0]->invoiceID);
-                                    	$globalpayment = array(
-                                            'classesID' => $classesID,
-                                            'sectionID' => $invoice->maininvoicesectionID,
-                                            'studentID' => $studentID,
-                                            'clearancetype' => 'partial',
-                                            'invoicename' => $student_data->registerNO .'-'. $student_data->name,
-                                            'invoicedescription' => '',
-                                            'paymentyear' => date("Y", strtotime($date)),
-                                            'schoolyearID' => 1,
-                                        );
-                                        $this->globalpayment_m->insert_globalpayment($globalpayment);
-                                    	$globalLastID = $this->db->insert_id();
-                                        $paymentArray = array(
-                                            'invoiceID' => $this->data['invoices'][0]->invoiceID,
-                                        	'schoolyearID' => 1,
-                                            'studentID' => $studentID,
-                                            'paymentamount' => 0,
-                                            'paymenttype' => 'Bank',
-                                            'paymentdate' => $date,
-                                            'paymentday' => date("d", strtotime($date)),
-                                            'paymentmonth' => date("m", strtotime($date)),
-                                            'paymentyear' => date("Y", strtotime($date)),
-                                            'userID' => $this->session->userdata('loginuserID'),
-                                            'usertypeID' => $this->session->userdata('usertypeID'),
-                                            'uname' => $this->session->userdata('name'),
-                                            'transactionID' => 'CASHANDCHEQUE'.random19(),
-                                            'globalpaymentID' => $globalLastID,
-                                        );           
-                                        $this->payment_m->insert_payment($paymentArray);
-                                        $paymentLastID = $this->db->insert_id();
-                                     	$weaverandfineArray = array(
-                                            'globalpaymentID' => $globalLastID,
-                                            'invoiceID' => $this->data['invoices'][0]->invoiceID,
-                                            'paymentID' => $paymentLastID,
-                                            'studentID' => $studentID,
-                                            'schoolyearID' => 1,
-                                            'weaver' => $invoice->maininvoicenet_fee,
-                                            'fine' => 0,
-                                        );
-                                        $this->weaverandfine_m->insert_weaverandfine($weaverandfineArray);
-                                    	$totaldiscount = $total_discount;
-								 	}
-								}
-							}
-						}
-					}
+					 $result = $this->student_m->update_student(array('discount' => $total_discount, 'net_fee' => $net_fee, 'total_fee' => $totalfee),$userID);
+					 
 					
 					$array = array(
 						'title' => $title,

@@ -136,6 +136,22 @@ class Balancefeesreport extends Admin_Controller{
 		}
 	}
 
+	public function getStudent_active_inactive() {
+		$classesID = $this->input->post('classesID');
+		$sectionID = $this->input->post('sectionID');
+		$schoolyearID = $this->session->userdata('defaultschoolyearID');
+		
+		echo "<option value='0'>", $this->lang->line("balancefeesreport_please_select"),"</option>";
+		if((int)$classesID && (int)$sectionID && (int)$schoolyearID) {
+			$students = $this->studentrelation_m->get_order_by_student(array('srclassesID' => $classesID,'active' => [0,1],'srsectionID' => $sectionID, 'srschoolyearID' => $schoolyearID));
+			if(customCompute($students)) {
+				foreach($students  as $student) {
+					echo "<option value=\"$student->srstudentID\">",$student->srname," - ",$student->srroll,"  (",$student->srregisterNO,")</option>";
+				}
+			}
+		}
+	}
+
 	public function getBalanceFeesReport() {
 		$retArray['status'] = FALSE;
 		$retArray['render'] = '';

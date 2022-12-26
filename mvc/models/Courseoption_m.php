@@ -38,6 +38,17 @@ class Courseoption_m extends MY_Model {
 		return $query->result();
 	}
 
+	function get_sum_label_amount_order_by_array($array=NULL) {
+		$this->db->select('SUM(label_amount) as total_fee');
+		$this->db->from('course_option');
+		 
+		if (count($array)) {
+			$this->db->where($array); 
+		}
+		$query = $this->db->get();
+		return $query->row();
+	}
+
 	function insert_salaryoption($array) {
 		$error = parent::insert($array);
 		return TRUE;

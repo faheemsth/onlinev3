@@ -25,14 +25,17 @@ echo "<div class=\"alert alert-custom alert-outline-danger fade show mb-5 alert-
 }
 ?>
 
-<div class="form-group">
+<div class="form-group fv-plugins-icon-container">
 <label class="font-size-h6 font-weight-bolder text-dark">Username</label>
-<input class="form-control form-control-solid h-auto py-7 px-6 border-0 rounded-lg font-size-h6" type="email" placeholder="Enter your email address" name="username" id="email"  value="<?=set_value('username')?>" autocomplete="off" />
+<input class="form-control form-control-solid h-auto py-7 px-6 border-0 rounded-lg font-size-h6 username" type="text" placeholder="Enter your email address" name="username" id="email"  value="<?=set_value('username')?>" autocomplete="off" />
+<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block" id="usernametext"></div></div>
 </div>
 
-<div class="form-group">
+<div class="form-group  fv-plugins-icon-container ">
 <label class="font-size-h6 font-weight-bolder text-dark">Password</label>
-<input class="form-control form-control-solid h-auto py-7 px-6 border-0 rounded-lg font-size-h6" type="password" placeholder="Enter Password" name="password" autocomplete="off" />
+<input class="form-control form-control-solid h-auto py-7 px-6 border-0 rounded-lg font-size-h6  password" type="password" placeholder="Enter Password" name="password" autocomplete="off" />
+
+<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block" id="passwordtext"></div></div>
 
 <!--begin::Form-->
 

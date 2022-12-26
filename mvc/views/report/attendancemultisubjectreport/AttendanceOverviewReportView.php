@@ -17,8 +17,6 @@
                         $array = array(
                             "0" => $this->lang->line("attendanceoverviewreport_please_select"),
                             "1" => $this->lang->line("attendanceoverviewreport_student"),
-                            "2" => $this->lang->line("attendanceoverviewreport_teacher"),
-                            "3" => $this->lang->line("attendanceoverviewreport_user"),
                         );
                         echo form_dropdown("usertype", $array, set_value("usertype"), "id='usertype' class='form-control select2'");
                      ?>
@@ -38,15 +36,15 @@
                 </div>
 
                 <div class="form-group col-sm-4" id="sectionDiv">
-                    <label><?=$this->lang->line("attendanceoverviewreport_section")?></label>
+                    <label><?=$this->lang->line("attendanceoverviewreport_section")?> <span class="text-red"> * </span></label>
                     <select id="sectionID" name="sectionID" class="form-control select2">
                         <option value="0"><?php echo $this->lang->line("attendanceoverviewreport_please_select"); ?></option>
                     </select>
                 </div>
 
                <div class="form-group col-sm-4" id="subjectDiv">
-                    <label><?=$this->lang->line("attendanceoverviewreport_subject")?><span class="text-red"> * </span></label>
-                    <select id="subjectID" name="subjectID" class="form-control select2">
+                    <label><?=$this->lang->line("attendanceoverviewreport_subject")?> </label>
+                    <select multiple="" id="subjectID" name="subjectID[]" class="form-control select2">
                         <option value="0"><?php echo $this->lang->line("attendanceoverviewreport_please_select"); ?></option>
                     </select>
                 </div>
@@ -58,11 +56,16 @@
                     </select>
                 </div>
 
-                <div class="form-group col-sm-4" id="monthDiv">
-                    <label><?=$this->lang->line("attendanceoverviewreport_month")?> <span class="text-red"> * </span></label>
-                    <input type="text" id="monthID" name="monthID" class="form-control"/>
+                <div class="form-group col-sm-2" id="startdateDiv">
+                    <label>Start Date <span class="text-red"> * </span></label>
+                    <input type="text" id="startdate" name="startdate" class="form-control datepicker"/>
                 </div>
 
+                <div class="form-group col-sm-2" id="enddateDiv">
+                    <label>Start Date <span class="text-red"> * </span></label>
+                    <input type="text" id="enddate" name="enddate" class="form-control datepicker"/>
+                </div>
+                <div class="clearfix"></div>
                 <div class="col-sm-4">
                     <button id="get_attendanceoverviewreport" class="btn btn-success" style="margin-top:23px;"> <?=$this->lang->line("attendanceoverviewreport_submit")?></button>
                 </div>
@@ -82,14 +85,7 @@
 
 <script type="text/javascript">
 
-    $('#monthID').datepicker( {
-        format: "mm-yyyy",
-        viewMode: "months", 
-        minViewMode: "months",
-        todayBtn: false,
-        startDate:"<?=$startDate?>",
-        endDate:"<?=$endDate?>",
-    });
+    $('.datepicker').datepicker();
 
     $('.select2').select2();
     function printDiv(divID) {
@@ -118,7 +114,8 @@
 
         $("#classesDiv").hide("slow");
         $("#sectionDiv").hide("slow");
-        $("#monthDiv").hide("slow");
+        $("#startdateDiv").hide("slow");
+        $("#enddateDiv").hide("slow");
         $("#userDiv").hide("slow");
         $("#subjectDiv").hide("slow");
     });
@@ -132,13 +129,17 @@
         if(usertype == 0) {
             $("#classesDiv").hide("slow");
             $("#sectionDiv").hide("slow");
-            $("#monthDiv").hide("slow");
+            
+        $("#startdateDiv").hide("slow");
+        $("#enddateDiv").hide("slow");
             $("#userDiv").hide("slow");
             $("#subjectDiv").hide("slow");
         } else if(usertype == 1) {
             $("#classesDiv").show("slow");
             $("#sectionDiv").show("slow");
-            $("#monthDiv").show("slow");
+            
+            $("#startdateDiv").show("slow");
+            $("#enddateDiv").show("slow");
             $("#userDiv").show("slow");
             <?php if($siteinfos->attendance == 'subject') { ?>
                 $('#subjectDiv').show()
@@ -162,7 +163,7 @@
         if(usertype == 2 || usertype == 3) {
             $.ajax({
                 type: 'POST',
-                url: "<?=base_url('attendanceoverviewreport/getUser')?>",
+                url: "<?=base_url('attendancemultisubjectreport/getUser')?>",
                 data: {"usertype" : usertype},
                 dataType: "html",
                 success: function(data) {
@@ -190,7 +191,7 @@
         } else {
             $.ajax({
                 type: 'POST',
-                url: "<?=base_url('attendanceoverviewreport/getSection')?>",
+                url: "<?=base_url('attendancemultisubjectreport/getSection')?>",
                 data: {"classesID" : classesID},
                 dataType: "html",
                 success: function(data) {
@@ -209,10 +210,12 @@
         if(sectionID == 0 ) {
             $('#userID').html('<option value="0">'+"<?=$this->lang->line("attendanceoverviewreport_please_select")?>"+'</option>');
             $('#userID').val('0');
+            $('#subjectID').html('<option value="0">'+"<?=$this->lang->line("attendanceoverviewreport_please_select")?>"+'</option>');
+            $('#subjectID').val('0');
         } else if(sectionID > 0 ) {
             $.ajax({
                 type: 'POST',
-                url: "<?=base_url('attendanceoverviewreport/getStudent')?>",
+                url: "<?=base_url('attendancemultisubjectreport/getStudent')?>",
                 data: {"usertype" : usertype,'classesID':classesID,'sectionID':sectionID},
                 dataType: "html",
                 success: function(data) {
@@ -222,7 +225,7 @@
             
             $.ajax({
                 type: 'POST',
-                url: "<?=base_url('attendanceoverviewreport/getSubject')?>",
+                url: "<?=base_url('attendancemultisubjectreport/getSubject')?>",
                 data: {"sectionID" : sectionID},
                 dataType: "html",
                 success: function(data) {
@@ -240,7 +243,7 @@
         $('#load_attendanceoverview_report').html('');
     });
     
-    $(document).on('change', '#monthID', function() {
+    $(document).on('change', '#enddate', function() {
         $('#load_attendanceoverview_report').html('');
     });
 
@@ -251,7 +254,8 @@
             'usertype'  : $('#usertype').val(),
             'classesID' : $('#classesID').val(),
             'sectionID' : $('#sectionID').val(),
-            'monthID'   : $('#monthID').val(),
+            'startdate' : $('#startdate').val(),
+            'enddate'   : $('#enddate').val(),
             'userID'    : $('#userID').val(),
             'subjectID' : $('#subjectID').val(),
         };
@@ -272,11 +276,25 @@
             $('#usertypeDiv').removeClass('has-error');
         }
 
-        if (field['monthID'] == '') {
-            $('#monthDiv').addClass('has-error');
+        if (field['startdate'] == '') {
+            $('#startdateDiv').addClass('has-error');
             error++;
         } else {
-            $('#monthDiv').removeClass('has-error');
+            $('#startdateDiv').removeClass('has-error');
+        }
+
+        if (field['enddate'] == '') {
+            $('#enddateDiv').addClass('has-error');
+            error++;
+        } else {
+            $('#enddateDiv').removeClass('has-error');
+        }
+         
+        if (field['sectionID'] == '0') {
+            $('#sectionDiv').addClass('has-error');
+            error++;
+        } else {
+            $('#sectionDiv').removeClass('has-error');
         }
 
         if(field['usertype'] == '1') {
@@ -288,12 +306,12 @@
             }
 
             <?php if($siteinfos->attendance == 'subject') { ?>
-                if (field['subjectID'] == '0') {
-                    $('#subjectDiv').addClass('has-error');
-                    error++;
-                } else {
-                    $('#subjectDiv').removeClass('has-error');
-                }
+                // if (field['subjectID'] == '0') {
+                //     $('#subjectDiv').addClass('has-error');
+                //     error++;
+                // } else {
+                //     $('#subjectDiv').removeClass('has-error');
+                // }
 
             <?php } ?>
             }
@@ -307,9 +325,10 @@
     }
 
     function ajaxCall(passData) {
+        console.log(passData);
         $.ajax({
             type: 'POST',
-            url: "<?=base_url('attendanceoverviewreport/getAttendacneOverviewReport')?>",
+            url: "<?=base_url('attendancemultisubjectreport/getAttendacneOverviewReport')?>",
             data: passData,
             dataType: "html",
             success: function(data) {

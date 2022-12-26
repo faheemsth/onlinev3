@@ -5,10 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <title>Sign In To Afro-Asian Portal</title>
-  
-    <link href="<?php echo base_url('assets/plugins/global/plugins.bundlec7e5.css?v=7.1.1') ?>" rel="stylesheet" type="text/css" />
-    <link href="<?php echo base_url('assets/plugins/custom/prismjs/prismjs.bundlec7e5.css?v=7.1.1') ?>" rel="stylesheet" type="text/css" />
-    <link href="<?php echo base_url('assets/css/style.bundlec7e5.css?v=7.1.1') ?>" rel="stylesheet" type="text/css" />
+   
+   <link href="<?php echo base_url('assets/css/style.bundlec7e5.css?v=7.1.1') ?>" rel="stylesheet" type="text/css" />
     <link href="<?php echo base_url('assets/css/pages/login/login-4.css') ?>" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="<?php echo base_url() ?>assets/media/logos/icon.png" />
 
@@ -27,7 +25,7 @@
                     <!--begin::Wrapper-->
                     <div class="login-content d-flex flex-column pt-lg-0 pt-12">
                         <!--begin::Logo-->
-                        <a href="index.php" class="login-logo pb-xl-20 pb-15">
+                        <a href="javascript:;" class="login-logo pb-xl-20 pb-15">
                             <img src="<?php echo base_url() ?>assets/media/logos/afro-logo.png" class="max-h-70px" alt="Afro-Asian" />
                         </a>
                         <!--end::Logo-->
@@ -38,8 +36,7 @@
                                 <!--begin::Title-->
                                 <div class="pb-5 pb-lg-5">
                                     <h3 class="font-weight-bolder text-dark font-size-h2 font-size-h1-lg">Sign In</h3>
-                                    <div class="font-weight-bold font-size-h4 mb-10">
-                                    <a href="create-account.html" class="text-primary font-weight-bolder"></a></div>
+                                     
                                 </div>
                                 <!--begin::Title-->
 
@@ -54,7 +51,7 @@
                     <div class="footer py-4 d-flex flex-lg-column">
                         <div class="container-fluid d-flex flex-column flex-md-row align-items-left justify-content-between">
                             <div class="text-dark order-2 order-md-1">
-                                <span class="text-muted font-weight-bold mr-2">Copyright &copy; 2022. AFRO-ASIAN INSTITUTE, LAHORE Pakistan - All Rights Reserved
+                                <span class="text-muted font-weight-bold mr-2">Copyright &copy; <?php date('Y');?>. AFRO-ASIAN INSTITUTE, LAHORE Pakistan - All Rights Reserved
                                             </span>
                             </div>
                         </div>
@@ -75,14 +72,49 @@
             <!--end::Login-->
         </div>
         <!--end::Main-->
-    <script src="<?php echo base_url('assets/plugins/global/plugins.bundle.js') ?>"></script>
-    <script src="<?php echo base_url('assets/plugins/custom/prismjs/prismjs.bundle.js') ?>"></script>
-    <script src="<?php echo base_url('assets/js/scripts.bundle.js') ?>"></script>
-    <script src="<?php echo base_url('assets/js/pages/custom/login/login-4.js') ?>"></script>
-    <script src="<?php echo base_url('assets/js/pages/crud/forms/widgets/input-mask.js') ?>"></script>
+    <script src="<?php echo base_url('assets/inilabs/jquery.min.js') ?>"></script> 
     <script type="text/javascript">
     var images = ['home1.JPG', 'home2.JPG', 'home3.JPG', 'home4.JPG', 'home5.JPG'];
     $('#background').css({'background-image': 'url(<?php echo  base_url() ?>assets/media/svg/illustrations/' + images[Math.floor(Math.random() * images.length)] + ')'});
+
+    $('.username').keyup(function(e){
+    var value   =   this.value;
+        
+    if (value.length>0) {
+                $(this).parent().removeClass('has-danger');
+                $(this).removeClass('is-invalid');
+
+                $(this).parent().addClass('has-success');
+                $(this).addClass('is-valid');
+                $("#usernametext").empty();
+          }else{
+                 $(this).parent().removeClass('has-success');
+                $(this).removeClass('is-valid');
+
+                $(this).parent().addClass('has-danger');
+                $(this).addClass('is-invalid'); 
+                $("#usernametext").text('Username is required');
+          }
+    });
+    $('.password').keyup(function(e){
+    var value   =   this.value;
+        
+    if (value.length>0) {
+                $(this).parent().removeClass('has-danger');
+                $(this).removeClass('is-invalid');
+
+                $(this).parent().addClass('has-success');
+                $(this).addClass('is-valid');
+                $("#passwordtext").empty();
+          }else{
+                 $(this).parent().removeClass('has-success');
+                $(this).removeClass('is-valid');
+
+                $(this).parent().addClass('has-danger');
+                $(this).addClass('is-invalid'); 
+                $("#passwordtext").text('Password is required');
+          }
+    });
     </script>
 
     </script>

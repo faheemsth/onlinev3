@@ -22,6 +22,32 @@ class Subjectattendance_m extends MY_Model {
 		return $query;
 	}
 
+	
+
+	public function get_subject_wherein_subjectID_array($array=NULL){
+		 
+		$this->db->select("*");
+		$this->db->from('sub_attendance'); 
+		if (count($array)) {
+ 
+
+			if (isset($array['subjectID'])) {
+				 $this->db->where_in('subjectID', $array['subjectID']);
+					unset($array['subjectID']);
+			}
+			 
+
+		 
+
+			
+			$this->db->where($array);
+		}
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	
+
 	public function insert_sub_attendance($array) {
 		$error = parent::insert($array);
 		return TRUE;

@@ -490,7 +490,7 @@
         if(sectionID != 0 && classesID != 0) {
             $.ajax({
                 type: 'POST',
-                url: "<?=base_url('balancefeesreport/getStudent')?>",
+                url: "<?=base_url('balancefeesreport/getStudent_active_inactive')?>",
                 data: {"classesID":classesID, "sectionID" : sectionID},
                 dataType: "html",
                 success: function(data) {

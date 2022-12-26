@@ -885,9 +885,9 @@
 					            				</thead>
 					            				<tbody>
 					            					<tr>
-					            						<td><?=$profile->total_fee?></td>
+					            						<td><?=$total_fee?></td>
 					            						<td><?=$profile->discount?></td>
-					            						<td><?=$profile->net_fee?></td>
+					            						<td><?=$total_fee-$profile->discount?></td>
 					            						<td><?=$profile->balance?></td>
 					            					</tr>
 					            				</tbody>
@@ -905,8 +905,8 @@
 					            				Total Fee
 					            			</div>
 					            			<div class="col-sm-6">
-					            				<?=$profile->total_fee?>
-					            				<input type="hidden" name="totalfee" id="totalfee" value="<?=$profile->total_fee?>">
+					            				<?=$total_fee?>
+					            				<input type="hidden" name="totalfee" id="totalfee" value="<?=$total_fee?>">
 					            			</div>
 					            		</div>
 					            		<div class="col-sm-12 form-group">
@@ -926,11 +926,11 @@
 					            		</div>
 					            		<div class="col-sm-12 form-group net_fee">
 					            			<label class="col-sm-2">Net Fee</label>
-					            			<div class="col-sm-6"><?=$profile->net_fee?></div>
+					            			<div class="col-sm-6"><?=$total_fee-$profile->discount?></div>
 					            		</div>
 					            		<input type="hidden" name="studentID" value="<?=$profile->srstudentID;?>">
 					            		<input type="hidden" name="classesID" value="<?=$profile->classesID;?>">
-					            		<input type="hidden" name="net_fee" id="net_fee" value="<?=$profile->net_fee?>">
+					            		<input type="hidden" name="net_fee" id="net_fee" value="<?=$total_fee-$profile->discount?>">
 					            		<div class="col-sm-12 form-group">
 					            			<div class="col-sm-2">
 					            				<label>Decision Title</label>

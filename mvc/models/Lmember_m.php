@@ -72,7 +72,7 @@ class Lmember_m extends MY_Model {
             $this->db->where('studentrelation.srstudentID', $queryArray['studentID']);
         }
         if(isset($queryArray['bookname']) && $queryArray['bookname'] != 0) {
-            $this->db->where('bookID', $queryArray['*/']);
+            $this->db->where('bookID', $queryArray['bookname']);
         }
 
         if(isset($queryArray['lID']) && $queryArray['lID'] != '') {

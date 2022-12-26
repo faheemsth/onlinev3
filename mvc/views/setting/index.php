@@ -923,6 +923,36 @@
                     </div>
             </fieldset>
 
+            
+
+            <fieldset class="setting-fieldset">
+                <legend class="setting-legend">Attendance Setting</legend>
+                
+                        <div class="col-sm-4"> 
+                            <div class="form-group <?=form_error('attendance_fine_percentage') ? 'has-error' : ''?>" >
+                                <div class="col-sm-12">
+                                    <label for="attendance_fine_percentage"><?=lang('Attendance_fine_percentage')?>
+                                        &nbsp;<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Fine will be charged bellow this percentage "></i>
+                                    </label>
+                                    <input type="text" class="form-control" id="attendance_fine_percentage" name="attendance_fine_percentage" value="<?=set_value('attendance_fine_percentage', $setting->attendance_fine_percentage)?>" />
+                                    <span class="control-label"><?=form_error('attendance_fine_percentage'); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <div class="col-sm-4"> 
+                            <div class="form-group <?=form_error('attendance_per_percantage_fine') ? 'has-error' : ''?>" >
+                                <div class="col-sm-12">
+                                    <label for="attendance_per_percantage_fine"><?=lang('attendance_per_percantage_fine')?>
+                                        &nbsp;<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Fine will be charged per percentage "></i>
+                                    </label>
+                                    <input type="text" class="form-control" id="attendance_per_percantage_fine" name="attendance_per_percantage_fine" value="<?=set_value('attendance_per_percantage_fine', $setting->attendance_per_percantage_fine)?>" />
+                                    <span class="control-label"><?=form_error('attendance_per_percantage_fine'); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+            </fieldset>
+
             <fieldset class="setting-fieldset">
                 <legend class="setting-legend"><?=$this->lang->line('setting_captcha')?></legend>
                 <div class="col-sm-4">

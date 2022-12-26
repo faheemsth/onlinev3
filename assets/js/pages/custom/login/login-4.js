@@ -2,6 +2,7 @@
 
 // Class Definition
 var KTLogin = function() {
+	debugger;
 	var _buttonSpinnerClasses = 'spinner spinner-right spinner-white pr-15';
 
 	var _handleFormSignin = function() {

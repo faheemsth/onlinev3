@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Attendanceoverviewreport extends Admin_Controller {
+class Attendancemultisubjectreport extends Admin_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->model("subject_m");
@@ -8,12 +8,14 @@ class Attendanceoverviewreport extends Admin_Controller {
 		$this->load->model("classes_m");
 		$this->load->model("teacher_m");
 		$this->load->model("user_m");
+		$this->load->model("student_m");
 		$this->load->model("sattendance_m");
 		$this->load->model("subjectattendance_m");
 		$this->load->model("studentrelation_m");
 		$this->load->model("leaveapplication_m");
 		$this->load->model("tattendance_m");
 		$this->load->model("uattendance_m");
+		$this->load->model("parents_m");
 		$language = $this->session->userdata('lang');
 		$this->lang->load('attendanceoverviewreport', $language);
 	}
@@ -26,8 +28,13 @@ class Attendanceoverviewreport extends Admin_Controller {
 				'rules' =>'trim|required|xss_clean|callback_unique_data'
 			),
 			array(
-				'field' => 'monthID',
-				'label' => $this->lang->line('attendanceoverviewreport_month'),
+				'field' => 'startdate',
+				'label' => 'Start Date',
+				'rules' =>'trim|required|xss_clean|callback_valid_date'
+			),
+			array(
+				'field' => 'enddate',
+				'label' => 'End Date',
 				'rules' =>'trim|required|xss_clean|callback_valid_date'
 			),
 			array(
@@ -46,13 +53,13 @@ class Attendanceoverviewreport extends Admin_Controller {
 			$rules[] = array(
 				'field' => 'sectionID',
 				'label' => $this->lang->line('attendanceoverviewreport_section'),
-				'rules' =>'trim|xss_clean'
+				'rules' =>'trim|required|xss_clean'
 			);
 			if($this->data["siteinfos"]->attendance == 'subject') {
 				$rules[] = array(
 					'field' => 'subjectID',
 					'label' => $this->lang->line('attendanceoverviewreport_subject'),
-					'rules' =>'trim|required|xss_clean|callback_unique_data'
+					'rules' =>'trim|xss_clean|callback_unique_data'
 				);
 			}
 		}
@@ -128,7 +135,7 @@ class Attendanceoverviewreport extends Admin_Controller {
 				'assets/select2/select2.js'
 			)
 		);
-		$this->data["subview"] = "report/attendanceoverview/AttendanceOverviewReportView";
+		$this->data["subview"] = "report/attendancemultisubjectreport/AttendanceOverviewReportView";
 		$this->load->view('_layout_main', $this->data);
 	}
 
@@ -148,7 +155,7 @@ class Attendanceoverviewreport extends Admin_Controller {
 		$sectionID = $this->input->post('sectionID');
 		if((int)$sectionID) {
 			$subjects = $this->subject_m->general_get_order_by_subject(array('sectionID' => $sectionID));
-			echo "<option value='0'>", $this->lang->line("attendanceoverviewreport_please_select"),"</option>";
+			//echo "<option value='0'>", $this->lang->line("attendanceoverviewreport_please_select"),"</option>";
 			foreach ($subjects as $subject) {
 				echo "<option value=\"$subject->subjectID\">".$subject->subject."</option>";
 			}
@@ -195,12 +202,13 @@ class Attendanceoverviewreport extends Admin_Controller {
 		$retArray['render'] = '';
 		if(permissionChecker('attendancereport')) {
 			if($_POST) {
-				$usertype = $this->input->post('usertype');
-				$classesID = $this->input->post('classesID');
-				$sectionID = $this->input->post('sectionID');
-				$subjectID = $this->input->post('subjectID');
-				$userID = $this->input->post('userID');
-				$monthID = $this->input->post('monthID');
+				$usertype 	= $this->input->post('usertype');
+				$classesID 	= $this->input->post('classesID');
+				$sectionID 	= $this->input->post('sectionID');
+				$subjectID 	= $this->input->post('subjectID');
+				$userID 	= $this->input->post('userID');
+				$startdate 	= $this->input->post('startdate');
+				$enddate 	= $this->input->post('enddate');
 
 				$rules = $this->rules($usertype);
 				$this->form_validation->set_rules($rules);
@@ -215,7 +223,10 @@ class Attendanceoverviewreport extends Admin_Controller {
 					$this->data['sectionID'] = $sectionID;
 					$this->data['subjectID'] = $subjectID;
 					$this->data['userID']    = $userID;
-					$this->data['monthID']   = $monthID;
+					$this->data['startdate']   = $startdate;
+					$this->data['enddate']   = $enddate;
+
+					
 					$schoolyearID 	= $this->session->userdata('defaultschoolyearID');
 					if($usertype == 1) {
 						$this->data['attendanceoverviewreport_reportfor'] = $this->lang->line('attendanceoverviewreport_student');
@@ -229,37 +240,140 @@ class Attendanceoverviewreport extends Admin_Controller {
 
 					if($usertype == '1') {
 						if($this->data["siteinfos"]->attendance == 'subject') {
-							$attendances =  pluck($this->subjectattendance_m->get_order_by_sub_attendance($queryArray),'obj','studentID');
-							$this->data['subjects'] = pluck($this->subject_m->general_get_order_by_subject(array('classesID' => $classesID)),'subject','subjectID');
-						} else {
-							$attendances =  pluck($this->sattendance_m->get_order_by_attendance($queryArray),'obj','studentID');
-						}
-						$this->data['leaveapplications'] = $this->leave_applications_date_list_by_user_and_schoolyear(1,$schoolyearID);
-						$this->data['users'] = $this->studentrelation_m->general_get_order_by_student($userQueryArray);
-					} elseif($usertype == '2') {
-						$attendances =  pluck($this->tattendance_m->get_order_by_tattendance($queryArray),'obj','teacherID');
-						$this->data['leaveapplications'] = $this->leave_applications_date_list_by_user_and_schoolyear(2,$schoolyearID);
-						$this->data['users'] = $this->teacher_m->general_get_order_by_teacher($userQueryArray);
-					} elseif($usertype == '3') {
-						$attendances = pluck($this->uattendance_m->get_order_by_uattendance($queryArray),'obj','userID');
-						$this->data['leaveapplications'] = $this->leave_applications_date_list_by_user_and_schoolyear(3,$schoolyearID);
-						$this->data['users'] = $this->user_m->get_order_by_user($userQueryArray);
-					}
-					$this->data['attendances'] = $attendances;
-					$this->data['getHolidays'] = explode('","', $this->getHolidaysSession());
-					$this->data['getWeekendDays'] = $this->getWeekendDaysSession();
+
+							$sub_array  = array('sectionID' => $sectionID );
+
+							if (($subjectID)!='') {
+								if (count($subjectID)>0) {
+									$sub_array['subjectID'] =	$subjectID;
+								}
+							}
+
+							$attendances =  $this->subjectattendance_m->get_subject_wherein_subjectID_array($queryArray);
+
+							$this->data['subjects'] = $this->subject_m->get_subject_wherein_subjectID_array($sub_array);
+							$this->data['subjects_pluck'] = pluck($this->data['subjects'],'subject','subjectID');
+							 $allMonths = get_month_and_year_using_two_date($startdate, $enddate);
+
+							 $pluck_student_attendance = pluck_multi_array($attendances,'obj','studentID'); 
+							 
+							 $get_st_array = array('classesID' => $classesID,'sectionID' => $sectionID );
+							 if ($userID>0) {
+							 	$get_st_array['studentID']	=	$userID;
+							 }
+							 $studentlist 	=	$this->student_m->get_order_by_student($get_st_array);
+
+							 foreach ($studentlist as $st) {
+							 	 
+
+							 	 if (isset($pluck_student_attendance[$st->studentID])) {
+							 	 	$attendances_subjectwisess = pluck_multi_array_key($pluck_student_attendance[$st->studentID], 'obj', 'subjectID', 'monthyear');
+							 	 }else{
+
+							 	 	$attendances_subjectwisess = array();
+							 	 }
+   								 
+
+
+		                                    $presentCount_total[$st->studentID] 		= 0;
+		                                    $lateexcuseCount_total[$st->studentID] 		= 0;
+		                                    $lateCount_total[$st->studentID] 			= 0;
+		                                    $absentCount_total[$st->studentID] 			= 0;
+							 	 
+			                          	foreach ($this->data['subjects'] as $subject) {
+			                          		$presentCount[$st->studentID][$subject->subjectID] 		= 0;
+		                                    $lateexcuseCount[$st->studentID][$subject->subjectID] 	= 0;
+		                                    $lateCount[$st->studentID][$subject->subjectID] 		= 0;
+		                                    $absentCount[$st->studentID][$subject->subjectID] 		= 0;
+			                          		 
+			                            	 
+			                         
+				                                                
+
+				                                                $allMonthsArray = array();
+
+				                                                foreach($allMonths as $yearKey => $allMonth) {
+				                                                    foreach($allMonth as $month) {
+				                                                        $monthAndYear = $month.'-'.$yearKey;
+				                                                        if(isset($attendances_subjectwisess[$subject->subjectID][$monthAndYear])) {
+				                                                            $attendanceMonthAndYear = $attendances_subjectwisess[$subject->subjectID][$monthAndYear];
+				                                                             
+				                                                                for ($i=1; $i <= 31; $i++) { 
+				                                                                    $acolumnname = 'a'.$i;
+				                                                                    $d = sprintf('%02d',$i);
+
+				                                                                    $date = $d."-".$month."-".$yearKey;
+				                                                                       
+				                                                                        $textcolorclass = '';
+				                                                                        $val = false;
+				                                                                        if(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'P') {
+				                                                                        	$presentCount[$st->studentID][$subject->subjectID]++;
+				                                                                            $textcolorclass = 'ini-bg-success';
+				                                                                        } elseif(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'LE') {
+				                                                                        	$lateexcuseCount[$st->studentID][$subject->subjectID]++;
+				                                                                            $textcolorclass = 'ini-bg-success';
+				                                                                        } elseif(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'L') {
+				                                                                        	$lateCount[$st->studentID][$subject->subjectID]++;
+				                                                                            $textcolorclass = 'ini-bg-success';
+				                                                                        } elseif(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'A') {
+				                                                                        	$absentCount[$st->studentID][$subject->subjectID]++;
+				                                                                            $textcolorclass = 'ini-bg-danger';
+				                                                                        } elseif((isset($attendanceMonthAndYear) && ($attendanceMonthAndYear->$acolumnname == NULL || $attendanceMonthAndYear->$acolumnname == ''))) {
+				                                                                            $textcolorclass = 'ini-bg-secondary';
+				                                                                            $defaultVal = 'N/A';
+				                                                                            $val = true;
+				                                                                        }
+
+				                                                                         
+				                                                                     
+				                                                                }
+				                                                            
+				                                                        }  
+				                                                    }
+				                                                }
+				                                               
+				                    	 	$presentCount_total[$st->studentID] 		+= $presentCount[$st->studentID][$subject->subjectID];
+		                                    $lateexcuseCount_total[$st->studentID] 		+= $lateexcuseCount[$st->studentID][$subject->subjectID];
+		                                    $lateCount_total[$st->studentID] 			+= $lateCount[$st->studentID][$subject->subjectID];
+		                                    $absentCount_total[$st->studentID] 			+= $absentCount[$st->studentID][$subject->subjectID];
+
+
+				                     }  //subject foreach close
+				                    //var_dump($presentCount_total[$st->studentID]);
+									//var_dump($lateexcuseCount_total[$st->studentID]);
+									//var_dump($lateCount_total[$st->studentID]);
+									//var_dump($absentCount_total[$st->studentID]);
+	                            } //student  foreach close
+
+							 }
+
+							 
+
+							
+							 
+						} 
+						 
+					}  
+ 					$this->data['studentlist'] 				=	 $studentlist;
+ 					$this->data['presentCount_total'] 		=	 $presentCount_total;
+                    $this->data['lateexcuseCount_total'] 	=    $lateexcuseCount_total;
+                    $this->data['lateCount_total'] 			=    $lateCount_total;
+                    $this->data['absentCount_total'] 		=    $absentCount_total;
+		 	 
+                  	 
+                  	$this->data['presentCount'] 			=	 $presentCount;
+                    $this->data['lateexcuseCount'] 			=    $lateexcuseCount;
+                    $this->data['lateCount'] 				=    $lateCount;
+                    $this->data['absentCount'] 				=    $absentCount;
 					$this->data['classes'] = pluck($this->classes_m->general_get_classes(),'classes','classesID');
 					$this->data['sections'] = pluck($this->section_m->general_get_section(),'section','sectionID');
-					$retArray['render'] = $this->load->view('report/attendanceoverview/AttendanceOverviewReport',$this->data,true);
+					$this->data['parents'] = pluck($this->parents_m->get_parents(),'name','parentsID');
+					$retArray['render'] = $this->load->view('report/attendancemultisubjectreport/AttendanceOverviewReport',$this->data,true);
 					$retArray['status'] = TRUE;
 					echo json_encode($retArray);
 				    exit;
 				}
-			} else {
-				$retArray['message'] = $this->lang->line('attendanceoverviewreport_permissionmethod');;
-				echo json_encode($retArray);
-				exit;
-			}
+			 
 		} else {
 			$retArray['message'] = $this->lang->line('attendanceoverviewreport_permission');;
 			echo json_encode($retArray);
@@ -294,10 +408,10 @@ class Attendanceoverviewreport extends Admin_Controller {
 	private function queryArray($posts) {
 		$schoolyearID = $this->session->userdata('defaultschoolyearID');
 		
-		$queryArray['schoolyearID'] = $schoolyearID; 				
-		if($posts['monthID'] !='') {
-			$queryArray['monthyear'] = $posts['monthID'];
-		}
+		//$queryArray['schoolyearID'] = $schoolyearID; 				
+		// if($posts['monthID'] !='') {
+		// 	$queryArray['monthyear'] = $posts['monthID'];
+		// }
 		if($posts['usertype'] == '1') {
 			$queryArray['classesID']     = $posts['classesID'];
 			if($posts['sectionID'] > 0) {
@@ -307,17 +421,11 @@ class Attendanceoverviewreport extends Admin_Controller {
 				$queryArray['studentID'] = $posts['userID'];
 			}
 			if($this->data["siteinfos"]->attendance == 'subject') {
+				if($posts['subjectID'] > 0) {
 				$queryArray['subjectID'] = $posts['subjectID'];
+				}
 			}
-		} elseif($posts['usertype'] == '2') {
-			if($posts['userID'] > 0) {
-				$queryArray['teacherID'] = $posts['userID'];
-			}
-		} elseif($posts['usertype'] == '3') {
-			if($posts['userID'] > 0) {
-				$queryArray['userID'] = $posts['userID'];
-			}
-		}
+		}  
 		return $queryArray;
 	}
 
@@ -398,7 +506,7 @@ class Attendanceoverviewreport extends Admin_Controller {
 				$this->data['getWeekendDays'] = $this->getWeekendDaysSession();
 				$this->data['classes'] = pluck($this->classes_m->general_get_classes(),'classes','classesID');
 					$this->data['sections'] = pluck($this->section_m->general_get_section(),'section','sectionID');
-				$this->reportPDF('attendanceoverviewreport.css', $this->data, 'report/attendanceoverview/AttendanceOverviewReportPDF','view','a4','l');
+				$this->reportPDF('attendanceoverviewreport.css', $this->data, 'report/attendancemultisubjectreport/AttendanceOverviewReportPDF','view','a4','l');
 			} else {
 				$this->data["subview"] = "error";
 				$this->load->view('_layout_main', $this->data);
@@ -483,7 +591,7 @@ class Attendanceoverviewreport extends Admin_Controller {
 					$this->data['getWeekendDays'] = $this->getWeekendDaysSession();
 					$this->data['classes'] = pluck($this->classes_m->general_get_classes(),'classes','classesID');
 					$this->data['sections'] = pluck($this->section_m->general_get_section(),'section','sectionID');
-					$this->reportSendToMail('attendanceoverviewreport.css', $this->data, 'report/attendanceoverview/AttendanceOverviewReportPDF', $to, $subject, $message,'a4','l');
+					$this->reportSendToMail('attendanceoverviewreport.css', $this->data, 'report/attendancemultisubjectreport/AttendanceOverviewReportPDF', $to, $subject, $message,'a4','l');
 					$retArray['status'] = TRUE;
 					echo json_encode($retArray);
     				exit;
@@ -500,24 +608,41 @@ class Attendanceoverviewreport extends Admin_Controller {
 		}
 	}
 
-	public function valid_date() {
-		$date = $this->input->post('monthID');
-		$date = '01-'.$date;
-		if(!empty($date)) {
-			if(strlen($date) == 10) {
-				$expDate = explode('-', $date);
-				if(checkdate($expDate[1], $expDate[0], $expDate[2])) {
-					return TRUE;
-				} else {
-					$this->form_validation->set_message('valid_date', 'The %s is dd-mm-yyyy');
-					return FALSE;
-				}
-			} else {
-				$this->form_validation->set_message('valid_date', 'The %s is dd-mm-yyyy');
-				return FALSE;
-			}
-		} 
-		return TRUE;
+	// public function valid_date() {
+	// 	$date = $this->input->post('monthID');
+	// 	$date = '01-'.$date;
+	// 	if(!empty($date)) {
+	// 		if(strlen($date) == 10) {
+	// 			$expDate = explode('-', $date);
+	// 			if(checkdate($expDate[1], $expDate[0], $expDate[2])) {
+	// 				return TRUE;
+	// 			} else {
+	// 				$this->form_validation->set_message('valid_date', 'The %s is dd-mm-yyyy');
+	// 				return FALSE;
+	// 			}
+	// 		} else {
+	// 			$this->form_validation->set_message('valid_date', 'The %s is dd-mm-yyyy');
+	// 			return FALSE;
+	// 		}
+	// 	} 
+	// 	return TRUE;
+	// }
+		public function valid_date($date) {
+   		if(strlen($date) < 10) {
+			$this->form_validation->set_message("date_valid", "%s is not valid dd-mm-yyyy");
+	     	return FALSE;
+		} else {
+	   		$arr = explode("-", $date);
+	        $dd = $arr[0];
+	        $mm = $arr[1];
+	        $yyyy = $arr[2];
+	      	if(checkdate($mm, $dd, $yyyy)) {
+	      		return TRUE;
+	      	} else {
+	      		$this->form_validation->set_message("date_valid", "%s is not valid dd-mm-yyyy");
+	     		return FALSE;
+	      	}
+	    }
 	}
 
 	public function xlsx() {
