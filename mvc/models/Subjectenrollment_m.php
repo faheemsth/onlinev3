@@ -35,6 +35,26 @@ class subjectenrollment_m extends MY_Model {
             }
     }
 
+    public function get_subjectnotenroll_join_student_by_array($array=NULL){
+        error_reporting(0);
+        $this->db->select('*');
+        $this->db->from('student');
+        $this->db->join('subjectenrollment', 'student.studentID = subjectenrollment.studentID', 'LEFT'); 
+        if ($array!=NULL) {
+            $this->db->where($array);
+        }
+        $this->db->where('subjectenrollment.created IS NULL', NULL);
+        $this->db->order_by("subjectenrollmentID", "DESC");
+        //$this->db->limit(2000);
+        $query = $this->db->get();
+        if($query == 1) {
+               $results =   $query->result();
+               return       $results;
+            } else{
+                 return array();
+            }
+    }
+
     function get_single_subjectenrollment($array) {
         $query = parent::get_single($array);
         return $query;
