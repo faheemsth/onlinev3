@@ -118,12 +118,12 @@
                     <input type="text" id="roll" name="roll" value="<?php echo set_value('roll',$roll);?>" class="form-control"/>
                 </div> 
                  <div class="form-group col-sm-2" >
-                    <label>Status</span></label>
+                    <label>Student Status</span></label>
                     <?php
 
 
                         $array = get_student_status_type();
-                         
+                         unset($array[2],$array[3],$array[4],$array[5]);
                         echo form_dropdown("active", $array, set_value("active",$active), "id='active' class='form-control select2'");
                      ?>
                 </div>

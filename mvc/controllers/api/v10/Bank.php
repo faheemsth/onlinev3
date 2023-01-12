@@ -11,7 +11,7 @@ class Bank extends CI_Controller
         $this->load->model("invoice_m");
         $this->load->model("Bank_m");
     }
-
+    
     public function challan_get() 
     {
 
