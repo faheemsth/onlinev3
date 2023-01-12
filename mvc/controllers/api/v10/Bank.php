@@ -10,6 +10,7 @@ class Bank extends CI_Controller
         $this->load->model('Student_m');
         $this->load->model("invoice_m");
         $this->load->model("Bank_m");
+        $this->load->model("user_m");
     }
     
     public function challan_get() 
@@ -17,22 +18,20 @@ class Bank extends CI_Controller
 
         if($_POST){
            
-            $username = $this->input->post("username");
-            $password = md5($this->input->post("password"));
-            $challanNo = $this->input->post("challanNo");
-            $campusID = $this->input->post("campusID");
+            $username   = $this->input->post("username");
+            $password   = $this->input->post("password");
+            $challanNo  = $this->input->post("challanNo");
+            $campusID   = $this->input->post("campusID");
             
             $data = array(
                     'username' => $username,
                     'password' => $password
                 );
-            $rows = $this->Student_m->get_numrows('student',$data);
+            $- = $this->user_m->get_user_table('user',$data);
 
-            if ($rows == 1) {
-                $student_result = $this->Student_m->get_single_username('student',$data);
+            if ($rows == 1) { 
                 $invoice_ary = array(
-                        'refrence_no' => $challanNo,
-                        'studentID' => $student_result->studentID,
+                        'refrence_no' => $challanNo, 
                     );
 
                 if ($this->Student_m->get_numrows('invoice',$invoice_ary) == 1){
