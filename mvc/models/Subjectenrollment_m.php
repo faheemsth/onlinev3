@@ -37,7 +37,7 @@ class subjectenrollment_m extends MY_Model {
 
     public function get_subjectnotenroll_join_student_by_array($array=NULL){
         error_reporting(0);
-        $this->db->select('*');
+        $this->db->select('student.*');
         $this->db->from('student');
         $this->db->join('subjectenrollment', 'student.studentID = subjectenrollment.studentID', 'LEFT'); 
         if ($array!=NULL) {

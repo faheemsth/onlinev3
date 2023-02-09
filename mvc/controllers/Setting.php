@@ -287,6 +287,21 @@ Class Setting extends Admin_Controller {
                 'field' => 'attendance_per_percantage_fine',
                 'label' => 'Attendance Per Day Fine',
                 'rules' => 'trim|required|xss_clean'
+            ],
+            [
+                'field' => 'fine_type',
+                'label' => 'Late Fee Fine Type',
+                'rules' => 'trim|required|xss_clean'
+            ],
+            [
+                'field' => 'latepayment_fine_ID',
+                'label' => 'Late Payment Fee Type',
+                'rules' => 'trim|required|xss_clean'
+            ],
+            [
+                'field' => 'latepayment_fine_amount',
+                'label' => 'Late Fee Fine Amount',
+                'rules' => 'trim|required|xss_clean'
             ]
         ];
 
