@@ -55,13 +55,13 @@ class Subjectenrollment extends Admin_Controller {
 
             $this->data['section']      = $this->section_m->general_get_single_section(array('sectionID' => $student->srsectionID));
             $this->data['invoice']      = $this->invoice_m->get_order_by_invoice(
-                                                                                array(
-                                                                                    'studentID' => $this->session->userdata('loginuserID'),
-                                                                                    'classesID' => $student->srclassesID,
-                                                                                    'sectionID' => $student->srsectionID,
-                                                                                    'paidstatus' => 2,
-                                                                                 )
-                                                                                );
+            array(
+                'studentID' => $this->session->userdata('loginuserID'),
+                'classesID' => $student->srclassesID,
+                'sectionID' => $student->srsectionID,
+                'paidstatus' => 2,
+             )
+            );
         }else{
             $array  = NULL;
 
@@ -248,13 +248,13 @@ class Subjectenrollment extends Admin_Controller {
 
             $this->data['section']      = $this->section_m->general_get_single_section(array('sectionID' => $student->srsectionID));
             $this->data['invoice']      = $this->invoice_m->get_order_by_invoice(
-                                                                                array(
-                                                                                    'studentID' => $this->session->userdata('loginuserID'),
-                                                                                    'classesID' => $student->srclassesID,
-                                                                                    'sectionID' => $student->srsectionID,
-                                                                                    'paidstatus' => 2,
-                                                                                 )
-                                                                                );
+                                        array(
+                                            'studentID' => $this->session->userdata('loginuserID'),
+                                            'classesID' => $student->srclassesID,
+                                            'sectionID' => $student->srsectionID,
+                                            'paidstatus' => 2,
+                                         )
+                                        );
         }else{
             $array  = NULL;
 
