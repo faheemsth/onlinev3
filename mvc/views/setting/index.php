@@ -594,6 +594,62 @@
                         </div>
                     </div>
 
+
+
+                    <div class="col-sm-3">
+                        <div class="form-group <?=form_error('fine_type') ? 'has-error' : ''?>">
+                            <div class="col-sm-12">
+                                <label for="ex_class">Late Fee Fine Type <span class="text-red">*</span> &nbsp;<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Default Discount Fee Type"></i>
+                                </label>
+                                    <?php
+                                        $fine_type_Array[''] = 'Please Select';
+                                        $fine_type_Array['1'] = 'Lump Sum';
+                                        $fine_type_Array['2'] = 'Per Day';
+                                         
+                                        echo form_dropdown("fine_type", $fine_type_Array, set_value("fine_type", $setting->fine_type), "id='fine_type' class='form-control select2'");
+                                    ?>
+                                <span class="control-label">
+                                    <?=form_error('fine_type'); ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group <?=form_error('latepayment_fine_ID') ? 'has-error' : ''?>">
+                            <div class="col-sm-12">
+                                <label for="ex_class">Late Payment Fee Type <span class="text-red">*</span> &nbsp;<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Default Discount Fee Type"></i>
+                                </label>
+                                    <?php
+                                        $feetype_Array['0'] = 'Please Select';
+                                        if(customCompute($feetypes)) {
+                                            foreach($feetypes as $fee) {
+                                                $feetype_Array[$fee->feetypesID] = $fee->feetypes;
+                                            }
+                                        }
+                                        echo form_dropdown("latepayment_fine_ID", $feetype_Array, set_value("latepayment_fine_ID", $setting->latepayment_fine_ID), "id='latepayment_fine_ID' class='form-control select2'");
+                                    ?>
+                                <span class="control-label">
+                                    <?=form_error('latepayment_fine_ID'); ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="col-sm-3">
+                        <div class="form-group <?=form_error('latepayment_fine_amount') ? 'has-error' : ''?>">
+                            <div class="col-sm-12">
+                                <label for="currency_symbol">Late Fee Fine Amount &nbsp;<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Set per day fine for late return of books"></i>
+                                </label>
+                                <input type="text" class="form-control" id="latepayment_fine_amount" name="latepayment_fine_amount" value="<?=set_value('latepayment_fine_amount', $setting->latepayment_fine_amount)?>" >
+                                <span class="control-label">
+                                    <?=form_error('latepayment_fine_amount'); ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-sm-3">
                         <div class="form-group <?=form_error('enrolment_feetype') ? 'has-error' : ''?>">
                             <div class="col-sm-12">
