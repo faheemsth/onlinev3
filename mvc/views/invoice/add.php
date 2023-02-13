@@ -16,6 +16,19 @@
                     $array_1['all']     =   'Please Select';
                     $array              =   get_general_feetype();
                     $array              =   array_merge($array_1, $array);
+                    if(!permissionChecker('tution_invoice')){
+                        unset($array['invoice']);
+                    }
+                    //var_dump(permissionChecker('other_charges'));
+                    if(!permissionChecker('other_charges')){
+                        unset($array['other_charges']);
+                    }
+                    if(!permissionChecker('Transport_fee')){
+                        unset($array['Transport_fee']);
+                    }
+                    if(!permissionChecker('hostel_fee')){
+                        unset($array['hostel_fee']);
+                    }
                     unset($array['library_fine']);    
                         echo form_dropdown("maininvoice_type_v", $array, set_value("maininvoice_type_v"), "id='maininvoice_type_v' class='form-control select2'");
                      ?>
@@ -239,10 +252,15 @@
             feetypedata    =   '<option value="3">Transport Fee</option>';
          }else if (this.value=='other_charges') {
             feetypedata    +=   '<option value="">Please Select</option>';
-            <?php foreach ($feetypes as $f){ ?>
+            <?php foreach ($feetypes as $f){
+             if(permissionChecker('fee_type_'.$f->feetypesID)){ ?>
                 
-                feetypedata    +=   '<option value="<?php echo $f->feetypesID;?>"><?php echo $f->feetypes;?></option>';
-            <?php } ?>
+               
+                         
+                         feetypedata    +=   '<option value="<?php echo $f->feetypesID;?>"><?php echo $f->feetypes;?></option>';
+                    
+               
+            <?php  } } ?>
 
             $("#other_amount").show();
             

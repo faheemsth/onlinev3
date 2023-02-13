@@ -18,6 +18,7 @@ class Feetypes extends Admin_Controller {
 		parent::__construct();
 		$this->load->model("feetypes_m");
 		$this->load->model("invoice_m");
+		$this->load->model("permissionlog_m");
 		$language = $this->session->userdata('lang');
 		$this->lang->load('feetypes', $language);	
 	}
@@ -85,7 +86,7 @@ class Feetypes extends Admin_Controller {
                             'feetypes' => $this->input->post('feetypes'). ' ['.$month.']',
                             "note"     => $this->input->post("note"),
                         ];
-                        $this->feetypes_m->insert_feetypes($array);
+                        //$this->feetypes_m->insert_feetypes($array);
                     }
                 } else {
                     $array = [
@@ -96,6 +97,13 @@ class Feetypes extends Admin_Controller {
                     ];
 
                     $this->feetypes_m->insert_feetypes($array);
+                  	$fee_id 	=		$this->db->insert_id();
+                    $array = array(
+                    "name" => 'fee_type_'.$fee_id,
+                    "description" => $this->input->post("feetypes"),
+                    "active" => 'yes'
+                );
+                $this->permissionlog_m->insert_permissionlog($array);
                 }
 
 				$this->session->set_flashdata('success', $this->lang->line('menu_success'));
