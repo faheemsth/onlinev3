@@ -257,6 +257,7 @@
                                         <th><?=$this->lang->line('balancefeesreport_section')?></th>
                                         <th><?=$this->lang->line('balancefeesreport_roll')?></th>
                                         <th><?=$this->lang->line('balancefeesreport_invoice_type')?></th>
+                                        <th>Opening Balance</th>
                                         <?php
                                         $typetotal  =   [];
                                          foreach($maininvoice_type_v as $invtype){
@@ -304,6 +305,53 @@
                                                 </td> 
                                                 <td data-title="<?=$this->lang->line('balancefeesreport_invoice_type')?>">
                                                     <?=isset($totalAmountAndDiscount[$student->studentID]['feetype']) ? $totalAmountAndDiscount[$student->studentID]['feetype'] : 'None'?>
+                                                </td>
+
+
+                                                
+                                                <?php
+                                                $st_amount1      =   0;
+                                                $st_discount1    =   0;
+                                                if (isset($totalAmount1AndDiscount1[$student->studentID]['total_paid1'])) { 
+                                                    $total_paid1     =   $totalAmount1AndDiscount1[$student->studentID]['total_paid1'];
+                                                }else{
+                                                    $total_paid1     =   0;
+                                                }
+                                                 foreach($maininvoice_type_v as $invtype){
+
+                                                    
+                                                    
+                                        if (isset($totalAmount1AndDiscount1[$student->studentID]['type_amount'][$invtype])) { 
+                                            $st_amount1    += $totalAmount1AndDiscount1[$student->studentID]['type_amount'][$invtype];
+                                            $typetotal[$invtype]['total']   += $totalAmount1AndDiscount1[$student->studentID]['type_amount'][$invtype];
+                                        }
+                                        if (isset($totalAmount1AndDiscount1[$student->studentID]['type_discount'][$invtype])) { 
+                                            $st_discount1    += $totalAmount1AndDiscount1[$student->studentID]['type_discount'][$invtype];
+                                            $typetotal[$invtype]['totaliscount']    += $totalAmount1AndDiscount1[$student->studentID]['type_discount'][$invtype];
+                                        }
+
+                                                    
+                                                     
+                                                    ?> 
+                                                    
+                                                     
+                                                <?php }?>
+
+                                                 <?php 
+                                                $net_amount1 = $st_amount1-$st_discount1; 
+                                                ?> 
+                                                 
+                                                <td>
+                                                    <?php
+
+                                                    $totalAmount1    += $st_amount1;
+                                                    $totalDiscount1  += $st_discount1;
+                                                    $totalPayments1  += $total_paid1; 
+                                                    $balance1        =  $net_amount1-$total_paid1 ;
+                                                    
+                                                    $totalBalance1   += $balance1;
+                                                    echo $balance1;
+                                                    ?>
                                                 </td>
                                                 
                                                 <?php
@@ -371,6 +419,7 @@
                                         <th><?=$this->lang->line('balancefeesreport_section')?></th>
                                         <th><?=$this->lang->line('balancefeesreport_roll')?></th>
                                         <th><?=$this->lang->line('balancefeesreport_invoice_type')?></th>
+                                        <th><?= echo $totalBalance1?></th>
                                         <?php foreach($maininvoice_type_v as $invtype){?>
                                             <th><?php echo $typetotal[$invtype]['total']  ;  ?></th>
                                             <th><?php echo $typetotal[$invtype]['totaliscount'] ;?></th>
@@ -391,6 +440,7 @@
                                         <th><?=$this->lang->line('balancefeesreport_section')?></th>
                                         <th><?=$this->lang->line('balancefeesreport_roll')?></th>
                                         <th><?=$this->lang->line('balancefeesreport_invoice_type')?></th>
+                                        <th>Opening Balance</th>
                                         <?php
                                         $typetotal  =   [];
                                          foreach($maininvoice_type_v as $invtype){
@@ -779,9 +829,6 @@
             });
         }
     });
-
-     
-
     
 </script>
 

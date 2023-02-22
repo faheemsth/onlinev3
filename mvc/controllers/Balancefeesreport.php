@@ -262,27 +262,33 @@ class Balancefeesreport extends Admin_Controller{
 	                    if ($date_type == "maininvoicedate") {
 	                        $inv_array["date >="] = date("Y-m-d",strtotime($start_date));
 	                        $inv_array["date <="] = date("Y-m-d",strtotime($end_date));
+	                       $inv_array1["date <"] = date("Y-m-d",strtotime($end_date));
 	                    }
 	                    if ($date_type == "maininvoicedue_date") {
 	                        $inv_array["due_date >="] = date("Y-m-d",strtotime($start_date));
 	                        $inv_array["due_date <="] = date("Y-m-d",strtotime($end_date));
+	                         $inv_array1["due_date <"] = date("Y-m-d",strtotime($end_date));
 	                    }
 	                    if ($date_type == "paymentdate") {
 	                        $inv_array["paymentdate >="] = date("Y-m-d",strtotime($start_date));
 	                        $inv_array["paymentdate <="] = date("Y-m-d",strtotime($end_date));
+	                        $inv_array1["paymentdate <"] = date("Y-m-d",strtotime($end_date));
 	                    }
  					}
 
- 					 
+ 					
  					//echo date('d-m-Y H:i:s A');
  					//echo "<br> invoice<br>";
 					$this->data['invoice_test'] 			= $this->invoice_m->get_invoice_by_array_where_in($inv_array);
+					$this->data['invoice_test1'] 			= $this->invoice_m->get_invoice_by_array_where_in($inv_array1);
+					
 					//echo $this->db->last_query();
 					//echo date('d-m-Y H:i:s A');
  					//echo "<br> invoice close<br>";
  					//exit();
 
 					$this->data['totalAmountAndDiscount'] 	= $this->totalAmountAndDiscustomCompute($this->data['invoice_test'],$inv_array["maininvoice_type_v"]);
+					$this->data['totalAmountAndDiscount1'] 	= $this->totalAmountAndDiscustomCompute($this->data['invoice_test1'],$inv_array["maininvoice_type_v"]);
 
 
 					if ($rendertype=="download") {
