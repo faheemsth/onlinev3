@@ -16,7 +16,7 @@
                     $array_1['all']     =   'Please Select';
                     $array              =   get_general_feetype();
                     $array              =   array_merge($array_1, $array);
-                     if(!permissionChecker('tution_invoice')){
+                    if(!permissionChecker('tution_invoice')){
                         unset($array['invoice']);
                     }
                     //var_dump(permissionChecker('other_charges'));
@@ -29,7 +29,7 @@
                     if(!permissionChecker('hostel_fee')){
                         unset($array['hostel_fee']);
                     }
-                    unset($array['library_fine']);      
+                    unset($array['library_fine']);    
                         echo form_dropdown("maininvoice_type_v", $array, set_value("maininvoice_type_v"), "id='maininvoice_type_v' class='form-control select2'");
                      ?>
                         <span class="text-red">
@@ -223,46 +223,6 @@
 
     </div>
 
-
-    <div class="col-sm-5" id="attendance_t_fine" style="display: none;">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title"><i class="fa icon-invoice"></i> <?='Attendance Fine'?></h3>
-            </div><!-- /.box-header -->
-            <div class="box-body"> 
-                 
- 
- 
-                    
-                    <div class="attendance_start_dateDiv form-group <?=form_error('attendance_start_date') ? 'has-error' : '' ?>" >
-                        <label for="date">
-                            Attendance check Start Date  <span class="text-red">*</span>
-                        </label>
-                            <input type="text" class="form-control date" id="attendance_start_date" name="attendance_start_date" value="<?=set_value('attendance_start_date')?>" >
-                        <span class="text-red">
-                            <?php echo form_error('attendance_start_date'); ?>
-                        </span>
-                    </div>
-                    
-                    <div class="attendance_end_dateDiv form-group <?=form_error('attendance_end_date') ? 'has-error' : '' ?>" >
-                        <label for="date">
-                            Attendance check end Date  <span class="text-red">*</span>
-                        </label>
-                            <input type="text" class="form-control date" id="attendance_end_date" name="attendance_end_date" value="<?=set_value('attendance_end_date')?>" >
-                        <span class="text-red">
-                            <?php echo form_error('attendance_end_date'); ?>
-                        </span>
-                    </div>
-                    
-
-                     
- 
-            </div>
-        </div>
-    
-
-    </div>
-
     <div class="col-sm-12">
          <input id="addInvoiceButton" type="button" class="btn btn-success" value="<?=$this->lang->line("add_invoice")?>" >
                 </form>
@@ -293,10 +253,14 @@
          }else if (this.value=='other_charges') {
             feetypedata    +=   '<option value="">Please Select</option>';
             <?php foreach ($feetypes as $f){
-                if(permissionChecker('fee_type_'.$f->feetypesID)){ ?>
+             if(permissionChecker('fee_type_'.$f->feetypesID)){ ?>
                 
-                feetypedata    +=   '<option value="<?php echo $f->feetypesID;?>"><?php echo $f->feetypes;?></option>';
-            <?php } } ?>
+               
+                         
+                         feetypedata    +=   '<option value="<?php echo $f->feetypesID;?>"><?php echo $f->feetypes;?></option>';
+                    
+               
+            <?php  } } ?>
 
             $("#other_amount").show();
             
@@ -715,10 +679,8 @@
             'paymentmethodID'       : $('#paymentmethodID').val(), 
             'payment_type'          : $('#payment_type').val(), 
             'last_date_enrollment'  : $('#last_date_enrollment').val(), 
-            'attendance_start_date' : $('#attendance_start_date').val(), 
-            'attendance_end_date'   : $('#attendance_end_date').val(), 
             'fine_type'             : $('#fine_type').val(), 
-            'feess_type'            : $('#feess_type').val(), 
+            'feess_type'             : $('#feess_type').val(), 
         };
         
         // if(field['classesID'] === '0') {
@@ -860,116 +822,6 @@
 
         }  
 
-
-        if(field['feess_type'] == '<?php echo $siteinfos->attendance_fine_feetypeID?>') {
-             
-            debugger;
-            if(field['attendance_start_date'] == '') {
-            $('.attendance_start_dateDiv').addClass('has-error');
-             toastr["error"]('Attendance check start date is Required')
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "500",
-                "hideDuration": "500",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            }
-            error++;
-        } else {
-            $('.attendance_start_dateDiv').removeClass('has-error');
-        }  
-
-            if(field['attendance_end_date'] === '') {
-            $('.attendance_end_dateDiv').addClass('has-error');
-             toastr["error"]('Attendance check end  date  is Required')
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "500",
-                "hideDuration": "500",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            }
-            error++;
-        } else {
-            $('.attendance_end_dateDiv').removeClass('has-error');
-        }
-
-
-
-            if(field['classesID'] == '0') {
-            $('.classesDiv').addClass('has-error');
-             toastr["error"]('Degree is Required')
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "500",
-                "hideDuration": "500",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            }
-            error++;
-        } else {
-            $('.classesDiv').removeClass('has-error');
-        }
-
-            if(field['sectionID'] == '0') {
-            $('.sectionDiv').addClass('has-error');
-             toastr["error"]('Semester is Required')
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "500",
-                "hideDuration": "500",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            }
-            error++;
-        } else {
-            $('.sectionDiv').removeClass('has-error');
-        }
-
-        }  //attendance_fine_feetypeID  if close
-
-        
-
         if(field['statusID'] === '5') {
             $('.statusDiv').addClass('has-error');
             error++;
@@ -1023,10 +875,6 @@
             formData.append("totalsubtotal", totalsubtotal);
             formData.append("totalpaidamount", totalpaidamount);
             formData.append("editID", 0);
-
-        if(field['feess_type'] == '<?php echo $siteinfos->attendance_fine_feetypeID?>') { 
-            formData.append("amount", 0);
-        }  //attendance_fine_feetypeID  if close
             makingPostDataPreviousofAjaxCall(formData);
         }
     });
@@ -1088,11 +936,6 @@ $(document).on('change', "#feess_type", function() {
  
          if (this.value=='<?php echo $siteinfos->enrolment_feetype?>') {
             $("#enrolment_fine").show('slow');
-         }
-         $("#attendance_t_fine").hide('slow');
- 
-         if (this.value=='<?php echo $siteinfos->attendance_fine_feetypeID?>') {
-            $("#attendance_t_fine").show('slow');
          } 
           
     });
