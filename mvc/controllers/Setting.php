@@ -2,6 +2,8 @@
 
 Class Setting extends Admin_Controller {
 /*
+
+<!-- test -->
 | -----------------------------------------------------
 | PRODUCT NAME: 	INILABS SCHOOL MANAGEMENT SYSTEM
 | -----------------------------------------------------
