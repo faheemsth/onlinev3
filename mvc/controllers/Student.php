@@ -249,8 +249,6 @@ class Student extends Admin_Controller {
 		$this->data['subjects'] = pluck($this->subject_m->general_get_subject(), 'subject', 'subjectID');
 		$this->data['teachers'] = pluck($this->teacher_m->get_teacher(), 'name', 'teacherID');
 		$this->data['feetypes'] = pluck($this->feetypes_m->get_feetypes(), 'feetypes', 'feetypesID');
-		$this->data['classesp'] = pluck($this->classes_m->get_classes(), 'classes', 'classesID');
-		$this->data['sectionp'] = pluck($this->section_m->get_section(), 'section', 'sectionID');
 	}
 
 	private function basicInfo($studentInfo) {
