@@ -62,7 +62,6 @@
                 <div class="form-group col-sm-3" id="classesDiv">
                     <label>Invoice Type </span></label>
                     <?php
-                    
                         $array = [lang("All")];
                         $array2 = get_general_feetype();
 

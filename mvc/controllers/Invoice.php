@@ -40,6 +40,8 @@ class Invoice extends Admin_Controller
         $this->load->model("hmember_m");
         $this->load->model("tmember_m");
         $this->load->model("courseoption_m");
+        $this->load->model("subjectattendance_m");
+        $this->load->model("subject_m");
         $language = $this->session->userdata("lang");
         $this->lang->load("student", $language);
         $this->lang->load("invoice", $language);
@@ -3038,6 +3040,134 @@ class Invoice extends Admin_Controller
                                
 
                             if (customCompute($getstudents)) {
+
+                                    if($this->data["siteinfos"]->attendance_fine_feetypeID == $this->input->post("feess_type")) {
+
+                            $sub_array  = array('sectionID' => $sectionID );
+
+                             
+                            $queryArray = $this->queryArray($this->input->post());
+                            $attendances =  $this->subjectattendance_m->get_subject_wherein_subjectID_array($queryArray);
+
+                            $this->data['subjects'] = $this->subject_m->get_subject_wherein_subjectID_array($sub_array); 
+                             $allMonths = get_month_and_year_using_two_date($startdate, $enddate);
+
+                             $pluck_student_attendance = pluck_multi_array($attendances,'obj','studentID'); 
+                             
+                             $get_st_array = array('classesID' => $classesID,'sectionID' => $sectionID );
+                             if ($studentID>0) {
+                                $get_st_array['studentID']  =   $studentID;
+                             }
+                             $studentlist   =   $this->student_m->get_order_by_student($get_st_array);
+
+                             $student_attendance_fine  = array();
+
+                             foreach ($studentlist as $st) {
+
+                                $student_percantage         = 0;
+                                $student_fine               = 0; 
+                                $student_total_attendance   = 0; 
+                                $student_total_absent       = 0; 
+                                 
+
+                                 if (isset($pluck_student_attendance[$st->studentID])) {
+                                    $attendances_subjectwisess = pluck_multi_array_key($pluck_student_attendance[$st->studentID], 'obj', 'subjectID', 'monthyear');
+                                 }else{
+                                    $attendances_subjectwisess = array();
+                                 }
+                                 
+
+
+                                            $presentCount_total[$st->studentID]         = 0;
+                                            $lateexcuseCount_total[$st->studentID]      = 0;
+                                            $lateCount_total[$st->studentID]            = 0;
+                                            $absentCount_total[$st->studentID]          = 0;
+                                 
+                                        foreach ($this->data['subjects'] as $subject) {
+                                            $presentCount[$st->studentID][$subject->subjectID]      = 0;
+                                            $lateexcuseCount[$st->studentID][$subject->subjectID]   = 0;
+                                            $lateCount[$st->studentID][$subject->subjectID]         = 0;
+                                            $absentCount[$st->studentID][$subject->subjectID]       = 0;
+                                             
+                                             
+                                     
+                                                                
+
+                                                                $allMonthsArray = array();
+
+                                                                foreach($allMonths as $yearKey => $allMonth) {
+                                                                    foreach($allMonth as $month) {
+                                                                        $monthAndYear = $month.'-'.$yearKey;
+                                                                        if(isset($attendances_subjectwisess[$subject->subjectID][$monthAndYear])) {
+                                                                            $attendanceMonthAndYear = $attendances_subjectwisess[$subject->subjectID][$monthAndYear];
+                                                                             
+                                                                                for ($i=1; $i <= 31; $i++) { 
+                                                                                    $acolumnname = 'a'.$i;
+                                                                                    $d = sprintf('%02d',$i);
+
+                                                                                    $date = $d."-".$month."-".$yearKey;
+                                                                                       
+                                                                                        $textcolorclass = '';
+                                                                                        $val = false;
+                                                                                        if(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'P') {
+                                                                                            $presentCount[$st->studentID][$subject->subjectID]++;
+                                                                                            $textcolorclass = 'ini-bg-success';
+                                                                                        } elseif(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'LE') {
+                                                                                            $lateexcuseCount[$st->studentID][$subject->subjectID]++;
+                                                                                            $textcolorclass = 'ini-bg-success';
+                                                                                        } elseif(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'L') {
+                                                                                            $lateCount[$st->studentID][$subject->subjectID]++;
+                                                                                            $textcolorclass = 'ini-bg-success';
+                                                                                        } elseif(isset($attendanceMonthAndYear) && $attendanceMonthAndYear->$acolumnname == 'A') {
+                                                                                            $absentCount[$st->studentID][$subject->subjectID]++;
+                                                                                            $textcolorclass = 'ini-bg-danger';
+                                                                                        } elseif((isset($attendanceMonthAndYear) && ($attendanceMonthAndYear->$acolumnname == NULL || $attendanceMonthAndYear->$acolumnname == ''))) {
+                                                                                            $textcolorclass = 'ini-bg-secondary';
+                                                                                            $defaultVal = 'N/A';
+                                                                                            $val = true;
+                                                                                        }
+
+                                                                                         
+                                                                                     
+                                                                                }
+                                                                            
+                                                                        }  
+                                                                    }
+                                                                }
+                                                               
+                                            $presentCount_total[$st->studentID]         += $presentCount[$st->studentID][$subject->subjectID];
+                                            $lateexcuseCount_total[$st->studentID]      += $lateexcuseCount[$st->studentID][$subject->subjectID];
+                                            $lateCount_total[$st->studentID]            += $lateCount[$st->studentID][$subject->subjectID];
+                                            $absentCount_total[$st->studentID]          += $absentCount[$st->studentID][$subject->subjectID];
+
+                                            $total_sub_at_held =  $presentCount[$st->studentID][$subject->subjectID]+$lateexcuseCount[$st->studentID][$subject->subjectID]+$lateCount[$st->studentID][$subject->subjectID]+$absentCount[$st->studentID][$subject->subjectID];
+                                              $student_total_attendance   += $total_sub_at_held; 
+                                              $student_total_absent       += $absentCount[$st->studentID][$subject->subjectID];
+
+                                              $sub_per    =   100-round(((($absentCount[$st->studentID][$subject->subjectID])/$total_sub_at_held)*100),2);
+                                                     
+                                              $student_percantage += $sub_per;
+
+                                              if($sub_per<$this->data['siteinfos']->attendance_fine_percentage){
+                                                $per_fine_number    =   $this->data['siteinfos']->attendance_fine_percentage-$sub_per;
+                                                $sub_fine           =   $this->data['siteinfos']->attendance_per_percantage_fine*$per_fine_number;
+                                                 
+                                                 $student_fine       += $sub_fine;
+                                              }else{
+                                                 
+                                              }
+                                     }  //subject foreach close
+                                    //var_dump($presentCount_total[$st->studentID]);
+                                    //var_dump($lateexcuseCount_total[$st->studentID]);
+                                    //var_dump($lateCount_total[$st->studentID]);
+                                    //var_dump($absentCount_total[$st->studentID]);
+                                    $student_attendance_fine[$st->studentID] =  $student_fine;
+                                } //student  foreach close
+
+                             }
+
+
+
                                     $paymentStatus      = 0;
                                     $paymentStatus      = $this->input->post("statusID");
                                     $payment_type       = $this->input->post("payment_type");
@@ -3225,7 +3355,16 @@ class Invoice extends Admin_Controller
                                 // $net_fee    = $this->input->post("amount");
 
 
-                                 if ($this->data['siteinfos']->enrolment_feetype==$feess_type) {
+                                 if ($this->data['siteinfos']->attendance_fine_feetypeID==$feess_type) {
+                                        //$checktime      =   $last_date;
+                                   
+                                       
+                                            $total_fee  = $student_attendance_fine[$getstudent->srstudentID];
+                                            $net_fee    = $student_attendance_fine[$getstudent->srstudentID];
+                                         
+                                        
+                                          
+                                    }elseif ($this->data['siteinfos']->enrolment_feetype==$feess_type) {
                                         //$checktime      =   $last_date;
                                     if (is_null($getstudent->enroll_date)) {
                                        $now = time(); // or your date as well
@@ -3253,7 +3392,7 @@ class Invoice extends Admin_Controller
                                         
                                           
                                     }else{
-                                        $getstudents = $this->studentrelation_m->get_order_by_student($studentArrays);
+                                        //$getstudents = $this->studentrelation_m->get_order_by_student($studentArrays);
 
                                         $total_fee  = $this->input->post("amount");
                                         $net_fee    = $this->input->post("amount");
@@ -3596,7 +3735,31 @@ class Invoice extends Admin_Controller
             exit();
         }
     }
+    
 
+    private function queryArray($posts) {
+        $schoolyearID = $this->session->userdata('defaultschoolyearID');
+        
+        //$queryArray['schoolyearID'] = $schoolyearID;              
+        // if($posts['monthID'] !='') {
+        //  $queryArray['monthyear'] = $posts['monthID'];
+        // }
+        if($posts['usertype'] == '1') {
+            $queryArray['classesID']     = $posts['classesID'];
+            if($posts['sectionID'] > 0) {
+                $queryArray['sectionID'] = $posts['sectionID'];
+            }
+            if($posts['studentID'] > 0) {
+                $queryArray['studentID'] = $posts['studentID'];
+            }
+            if($this->data["siteinfos"]->attendance == 'subject') {
+                if($posts['subjectID'] > 0) {
+                $queryArray['subjectID'] = $posts['subjectID'];
+                }
+            }
+        }  
+        return $queryArray;
+    }
     public function saveinvoice_hostel()
     {
         

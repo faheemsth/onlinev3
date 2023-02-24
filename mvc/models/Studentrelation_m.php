@@ -223,42 +223,6 @@ class Studentrelation_m extends MY_Model {
         return $query->result();
     }
 
-    public function get_order_by_student_api($arrays = [], $studentExtend = FALSE) {
-		 
-
-		$arrays = $this->prefixLoad($arrays);
-        $this->db->select('*');
-        $this->db->from('studentrelation');
-        $this->db->join('student', 'student.studentID = studentrelation.srstudentID', 'LEFT');
-
-        if($studentExtend) {
-        	$this->db->join('studentextend', 'studentextend.studentID = studentrelation.srstudentID', 'LEFT');
-        }
- 
-
-        if(customCompute($arrays)) {
-
-        	if (isset($arrays['student.active'])) {
-        	 	 
-	        	if (is_array($arrays['student.active'])) {
-	        		$this->db->group_start(); 
-	        		foreach ($arrays['student.active'] as $ac) {
-	        			
-	        			$this->db->or_where('active',$ac); 
-	        		}
-	        		$this->db->group_end(); 
-	        		      
-	        		unset($arrays['student.active']);
-	        	} 
-        	} 
-            $this->db->where($arrays);
-        }
-        $this->db->where('student.studentID !=', NULL);
-        $this->db->order_by('srroll asc');
-        $query = $this->db->get();
-        return $query->result();
-    }
-
     public function get_order_by_student_enrollment($arrays = [], $studentExtend = FALSE) {
 		$this->_relation_array = $this->userRelation();
 		if(!customCompute($this->_relation_array) && in_array($this->session->userdata('usertypeID'), $this->_user_role_array)) {

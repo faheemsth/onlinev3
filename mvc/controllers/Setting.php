@@ -289,18 +289,8 @@ Class Setting extends Admin_Controller {
                 'rules' => 'trim|required|xss_clean'
             ],
             [
-                'field' => 'fine_type',
-                'label' => 'Late Fee Fine Type',
-                'rules' => 'trim|required|xss_clean'
-            ],
-            [
-                'field' => 'latepayment_fine_ID',
-                'label' => 'Late Payment Fee Type',
-                'rules' => 'trim|required|xss_clean'
-            ],
-            [
-                'field' => 'latepayment_fine_amount',
-                'label' => 'Late Fee Fine Amount',
+                'field' => 'attendance_fine_feetypeID',
+                'label' => 'Attendance Fine Feetype',
                 'rules' => 'trim|required|xss_clean'
             ]
         ];
@@ -379,7 +369,7 @@ Class Setting extends Admin_Controller {
             ]
         ];
          
-            //localfilescehck
+
         $this->data['setting']          = $this->setting_m->get_setting();
         $this->data['settingarray']     = $this->setting_m->get_setting_array();
         $this->data['schoolyears']      = $this->schoolyear_m->get_order_by_schoolyear([ 'schooltype' => 'classbase' ]);

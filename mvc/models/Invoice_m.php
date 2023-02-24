@@ -59,14 +59,6 @@ class Invoice_m extends MY_Model {
 		$this->db->where($array);
 		$this->db->update("upload_cpv_bpv");
 	}
-    public function update_post_status_by_id( $id) {
-
-    	$data 	= array('post_status' => 1 ,'updated' => date('Y-m-d h:i:s') );
-    	$array 	= array('id' => $id  );
-		$this->db->set($data);
-		$this->db->where($array);
-		$this->db->update("bank_challan_record");
-	}
 
     public function invoice_accounts($student_id,$class_id,$net_fee,$ref_no,$maininvoiceID,$accounts_reg,$description){
         $strings = "SELECT journal_id FROM journal_entries ORDER BY journal_id DESC LIMIT 1";
@@ -296,16 +288,6 @@ class Invoice_m extends MY_Model {
     	$this->db->from('upload_cpv_bpv');
     	if ($status != NULL) {
     		$this->db->where('upload_cpv_bpv.status', $status);
-    	}
-    	$query = $this->db->get();
-    	return $query->result();
-    }
-
-    public function get_reconcile_data_bank($status = NULL){
-    	$this->db->select('*');
-    	$this->db->from('bank_challan_record');
-    	if ($status != NULL) {
-    		$this->db->where('bank_challan_record.id', $status);
     	}
     	$query = $this->db->get();
     	return $query->result();
