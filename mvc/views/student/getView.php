@@ -994,7 +994,10 @@
 				                                <th><?=$this->lang->line('refrence_no')?></th>
 				                                <th><?=$this->lang->line('student_feetype')?></th>
 				                                <th><?=$this->lang->line('student_date')?></th>
+				                                <th><?=$this->lang->line('student_classes')?></th>
+				                                <th><?=$this->lang->line('student_section')?></th>
 				                                <th><?=$this->lang->line('student_status')?></th>
+				                                <th>Invoice Status</th>
 				                                <th><?=$this->lang->line('student_fees_amount')?></th>
 				                                <th><?=$this->lang->line('student_discount')?></th>
 				                                <th><?=$this->lang->line('student_paid')?></th>
@@ -1023,6 +1026,19 @@
 				                                    <td data-title="<?=$this->lang->line('student_date')?>">
 				                                        <?=!empty($invoice->date) ? date('d M Y', strtotime($invoice->date)) : ''?>
 				                                    </td>
+				                                    <td>
+				                                    	<?php echo $classesp[$invoice->classesID]?>
+				                                    </td>
+				                                    <td>
+				                                    	<?php
+				                                    	if ($invoice->sectionID!=0) {
+				                                    		echo $sectionp[$invoice->sectionID];
+				                                    	}else{
+				                                    		echo 'Not Set';
+				                                    	}
+				                                    	 ?>
+				                                    	 
+				                                    </td>
 
 				                                    <td data-title="<?=$this->lang->line('student_status')?>">
 				                                        <?php 
@@ -1040,6 +1056,22 @@
 				                                            }
 
 				                                            echo "<span class='".$setButton."'>".$status."</span>";
+				                                        ?>
+				                                    </td>
+
+				                                    <td data-title="<?=$this->lang->line('student_status')?>">
+				                                        <?php 
+				                                            $invoice_status = $invoice->invoice_status;
+				                                            $setButtoni = '';
+				                                            if($invoice_status == 0) {
+				                                                $statusi = 'In Active';
+				                                                $setButtoni = 'btn btn-danger btn-xs';
+				                                            } elseif($invoice_status == 1) {
+				                                                $statusi = 'Active';
+				                                                $setButtoni = 'btn btn-success btn-xs';
+				                                            } 
+
+				                                            echo "<span class='".$setButtoni."'>".$statusi."</span>";
 				                                        ?>
 				                                    </td>
 
@@ -1075,7 +1107,7 @@
 						              		<?php $i++; } } ?>
 
 						              		<tr>
-				                                <td colspan="4" data-title="<?=$this->lang->line('student_total')?>">
+				                                <td colspan="8" data-title="<?=$this->lang->line('student_total')?>">
 				                                	<?php if($siteinfos->currency_code) { echo '<b>'. $this->lang->line('student_total').' ('.$siteinfos->currency_code.')'. '</b>'; } else { echo '<b>'. $this->lang->line('student_total') .'</b>'; }
 				                                    ?>
 				                                </td>

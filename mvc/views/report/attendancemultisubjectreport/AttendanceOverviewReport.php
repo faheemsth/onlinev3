@@ -31,18 +31,15 @@
             $pdf_preview_uri = base_url($pdfurl);
             $xml_preview_uri = base_url($xmlurl);
 
-            
+            echo btn_printReport('attendanceoverviewreport', $this->lang->line('report_print'), 'printablediv');
             echo btn_pdfPreviewReport('attendanceoverviewreport',$pdf_preview_uri, $this->lang->line('report_pdf_preview'));
             echo btn_xmlReport('attendanceoverviewreport', $xml_preview_uri, $this->lang->line('report_xlsx'));
             echo btn_sentToMailReport('attendanceoverviewreport', $this->lang->line('report_send_pdf_to_mail'));*/
-            echo btn_printReport('attendanceoverviewreport', $this->lang->line('report_print'), 'printablediv');
         ?>
     </div>
 </div>
 
-<div class="box" style="
-    overflow-x: scroll;
-">
+<div class="box">
     <!-- form start -->
     <div class="box-header bg-gray">
         <h3 class="box-title text-navy"><i class="fa fa-clipboard"></i> <?=$this->lang->line('attendanceoverviewreport_reportfor')?> <?=$this->lang->line('attendanceoverviewreport_type')?> - <?=$attendanceoverviewreport_reportfor?> ( <?php if($usertype == 1 && $siteinfos->attendance == 'subject') {
