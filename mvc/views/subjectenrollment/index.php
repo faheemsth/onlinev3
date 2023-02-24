@@ -33,19 +33,17 @@
                             }
 
                         }else{
-                            echo "Already Enrolled";
+                            echo "Enrolled";
                         }?>
                     </h5>
                 <?php } ?>
-
 
 
                 <?php if(($this->session->userdata('usertypeID') != 3)){?>
 
 
                 <form type="get" action="">
-                <div class="col-sm-12">
-                     
+                <div class="col-sm-12">       
 
                 
                 <div class="form-group col-sm-3" id="classesDiv">
@@ -101,7 +99,7 @@
                         }?>
                     </select>
                 </div>
-
+               
                  
 
                 <div class="form-group col-sm-3"  >
@@ -119,12 +117,29 @@
                     <label>Roll </label>
                     <input type="text" id="roll" name="roll" value="<?php echo set_value('roll',$roll);?>" class="form-control"/>
                 </div> 
+                 <div class="form-group col-sm-2" >
+                    <label>Student Status</span></label>
+                    <?php
 
+
+                        $array = get_student_status_type();
+                         unset($array[2],$array[3],$array[4],$array[5]);
+                        echo form_dropdown("active", $array, set_value("active",$active), "id='active' class='form-control select2'");
+                     ?>
+                </div>
+                <div class="form-group col-sm-2"  >
+                    <label>Enrollment Status </label>
                 
+                      <?php
+                        $array = array("1" => 'Enrolled',
+                                        "2" => 'Not Enrolled');
+                        
+                        echo form_dropdown("enrollStatus", $array, set_value("enrollStatus",$enrollStatus), "id='enrollStatus' class='form-control select2'");
+                     ?>
+                </div> 
 
-                
 
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <button type="submit" class="btn btn-success" style="margin-top:23px;">Search</button>
                     <a href="<?php echo base_url('subjectenrollment/index/');?>" class="btn btn-danger" style="margin-top:23px;">Reset</a>
                 </div>
