@@ -328,7 +328,7 @@ Class Subject extends Admin_Controller {
 	public function unique_subject() {
 		$id = htmlentities(escapeString($this->uri->segment(3)));
 		if((int)$id) {
-			$subject = $this->subject_m->general_get_order_by_subject(array("subject" => $this->input->post("subject"), "subjectID !=" => $id, "classesID" => $this->input->post("classesID")));
+			$subject = $this->subject_m->general_get_order_by_subject(array("subject" => $this->input->post("subject"), "subjectID !=" => $id, "sectionID" => $this->input->post("sectionID")));
 			if(customCompute($subject)) {
 				$this->form_validation->set_message("unique_subject", "%s already exists");
 				return FALSE;
