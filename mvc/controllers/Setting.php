@@ -369,7 +369,7 @@ Class Setting extends Admin_Controller {
             ]
         ];
          
-
+            //localfilescehck
         $this->data['setting']          = $this->setting_m->get_setting();
         $this->data['settingarray']     = $this->setting_m->get_setting_array();
         $this->data['schoolyears']      = $this->schoolyear_m->get_order_by_schoolyear([ 'schooltype' => 'classbase' ]);
