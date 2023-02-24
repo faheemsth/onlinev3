@@ -55,13 +55,206 @@ class Subjectenrollment extends Admin_Controller {
 
             $this->data['section']      = $this->section_m->general_get_single_section(array('sectionID' => $student->srsectionID));
             $this->data['invoice']      = $this->invoice_m->get_order_by_invoice(
-                                                                                array(
-                                                                                    'studentID' => $this->session->userdata('loginuserID'),
-                                                                                    'classesID' => $student->srclassesID,
-                                                                                    'sectionID' => $student->srsectionID,
-                                                                                    'paidstatus' => 2,
-                                                                                 )
-                                                                                );
+            array(
+                'studentID' => $this->session->userdata('loginuserID'),
+                'classesID' => $student->srclassesID,
+                'sectionID' => $student->srsectionID,
+                'paidstatus' => 2,
+             )
+            );
+        }else{
+            $array  = NULL;
+
+
+            $this->data["active"]               = 1;
+            $this->data["studentID"]            = 0;
+            $this->data["classesID"]            = 0;
+            $this->data["sectionID"]            = 0;
+            $this->data["name"]                 = "";
+            $this->data["email"]                = "";
+            $this->data["phone"]                = "";
+            $this->data["address"]              = "";
+            $this->data["registerNO"]           = "";
+            $this->data["roll"]                 = "";
+            $this->data["username"]             = "";
+            $this->data["InstallmentsID"]       = "";  
+            $this->data["enrollStatus"]       = "";  
+            $this->data["allstudents"]          = [];
+ 
+
+
+            if ($_GET) {
+                $array = [];
+                $active = $_GET["active"];
+                if ($active != '') {
+                    $array["active"]        = $active;
+                    $this->data["active"]   = $active;
+                     
+                }
+
+                $classesID = $_GET["classesID"];
+                if ($classesID != 0) {
+
+                    $array["student.classesID"]         = $classesID;
+                    $this->data["classesID"]    = $classesID;
+                    $this->data["allsection"] = $this->section_m->get_order_by_section(["classesID" => $classesID,]);
+                }
+                $sectionID      = $_GET["sectionID"];
+
+                if ($sectionID != 0) {
+                    $array["student.sectionID"]         = $sectionID;
+                    $this->data["sectionID"]    = $sectionID;
+
+                    $studentArrays = ["srclassesID" => $classesID];
+                    if ((int) $sectionID) {
+                        $studentArrays["srsectionID"]   = $sectionID;
+                    }
+                    $this->data["allstudents"]          = $this->studentrelation_m->get_order_by_student($studentArrays);
+                }
+
+
+                $studentID      =   $_GET["studentID"];
+
+                if ($studentID != 0) {
+                    $array["student.studentID"] = $studentID;
+                    $this->data["studentID"] = $studentID;
+                }
+
+                $name   =   $_GET["name"];
+
+                if ($name != "") {
+                    $array["name LIKE"]     = "%$name%";
+                    $this->data["name"]     = $name;
+                } 
+                
+                $email  =   $_GET["email"];
+
+                if ($email != "") {
+                    $array["email LIKE"]    = "%$email%";
+                    $this->data["email"]    = $email;
+                } 
+                
+                $phone  =   $_GET["phone"];
+
+                if ($phone != "") {
+                    $array["phone LIKE"]    = "%$phone%";
+                    $this->data["phone"]    = $phone;
+                }
+                
+                $phone  =   $_GET["address"];
+
+                if ($phone != "") {
+                    $array["address LIKE"]  = "%$address%";
+                    $this->data["address"]  = $address;
+                }
+                
+                $registerNO     =   $_GET["registerNO"];
+
+                if ($registerNO != "") {
+                    $array["registerNO"]        = $registerNO;
+                    $this->data["registerNO"]   = $registerNO;
+                } 
+                
+                $roll   =   $_GET["roll"];
+
+                if ($roll != "") {
+                    $array["roll"]          = $roll;
+                    $this->data["roll"]     = $roll;
+                } 
+                
+                $username   =   $_GET["username"];
+
+                if ($username != "") {
+                    $array["username LIKE"]     = "%$username%";
+                    $this->data["username"]     = $username;
+                }
+                
+                $InstallmentsID     =   $_GET["InstallmentsID"];
+
+                if ($InstallmentsID != "") {
+                    $array["no_installment"]        = $InstallmentsID;
+                    $this->data["InstallmentsID"]   = $InstallmentsID;
+                } 
+                 
+
+                 
+            }else{
+
+                $array = NULL;
+                $_GET['enrollStatus']=1;
+            }
+        }
+
+        $section = $this->section_m->get_section();
+        $section = pluck($section, "obj", "sectionID");
+        $this->data["section_pluck"] = $section;
+
+
+        $classess = $this->classes_m->get_classes();
+        $classes = pluck($classess, "obj", "classesID");
+        $this->data["classes_pluck"] = $classes;
+        $this->data["classes"] = $this->classes_m->general_get_classes();
+        $this->data['subjectenrollments'] = array();
+        if($_GET['enrollStatus']==1){
+            $this->data["enrollStatus"]   = $_GET['enrollStatus'];
+            $this->data['subjectenrollments'] = $this->subjectenrollment_m->get_subjectenrollment_join_student_by_array($array);
+        }
+        if($_GET['enrollStatus']==2){
+            $this->data["enrollStatus"]  = $_GET['enrollStatus'];
+            $this->data['subjectenrollments'] = $this->subjectenrollment_m->get_subjectnotenroll_join_student_by_array($array);
+        }
+        
+        
+
+        $this->data["subview"] = "/subjectenrollment/index";
+        $this->load->view('_layout_main', $this->data);
+    }
+
+    protected function rules() {
+        $rules = array(
+            array(
+                'field' => 'title',
+                'label' => $this->lang->line("subjectenrollment_title"),
+                'rules' => 'trim|xss_clean|max_length[128]'
+            )
+        );
+        return $rules;
+    }
+
+
+        public function not_enrolled() { 
+
+        $this->data['headerassets'] = array(
+            'css' => array(
+                'assets/select2/css/select2.css',
+                'assets/select2/css/select2-bootstrap.css'
+            ),
+            'js' => array(
+                'assets/select2/select2.js'
+            )
+        );
+        $usertypeID     =    $this->session->userdata('usertypeID');
+        if ($usertypeID==3) {
+            $student = $this->studentrelation_m->get_single_student([
+                'srstudentID'    => $this->session->userdata('loginuserID'),
+                'srschoolyearID' => $this->session->userdata('defaultschoolyearID')
+            ]);
+            $array  = array(
+                'subjectenrollment.studentID' => $this->session->userdata('loginuserID'),
+                'subjectenrollment.classesID' => $student->srclassesID,
+                'subjectenrollment.sectionID' => $student->srsectionID,
+                 );
+
+
+            $this->data['section']      = $this->section_m->general_get_single_section(array('sectionID' => $student->srsectionID));
+            $this->data['invoice']      = $this->invoice_m->get_order_by_invoice(
+                                        array(
+                                            'studentID' => $this->session->userdata('loginuserID'),
+                                            'classesID' => $student->srclassesID,
+                                            'sectionID' => $student->srsectionID,
+                                            'paidstatus' => 2,
+                                         )
+                                        );
         }else{
             $array  = NULL;
 
@@ -193,21 +386,9 @@ class Subjectenrollment extends Admin_Controller {
         $this->data["classes_pluck"] = $classes;
         $this->data["classes"] = $this->classes_m->general_get_classes();
         $this->data['subjectenrollments'] = $this->subjectenrollment_m->get_subjectenrollment_join_student_by_array($array);
-        $this->data["subview"] = "/subjectenrollment/index";
+        $this->data["subview"] = "/subjectenrollment/not_enrolled";
         $this->load->view('_layout_main', $this->data);
     }
-
-    protected function rules() {
-        $rules = array(
-            array(
-                'field' => 'title',
-                'label' => $this->lang->line("subjectenrollment_title"),
-                'rules' => 'trim|xss_clean|max_length[128]'
-            )
-        );
-        return $rules;
-    }
-
     public function add() {
         $this->data['headerassets'] = array(
             'css' => array(

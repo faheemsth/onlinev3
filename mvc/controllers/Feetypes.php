@@ -86,7 +86,7 @@ class Feetypes extends Admin_Controller {
                             'feetypes' => $this->input->post('feetypes'). ' ['.$month.']',
                             "note"     => $this->input->post("note"),
                         ];
-                        $this->feetypes_m->insert_feetypes($array);
+                        //$this->feetypes_m->insert_feetypes($array);
                     }
                 } else {
                     $array = [
