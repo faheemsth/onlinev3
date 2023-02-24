@@ -60,7 +60,7 @@ class User extends Admin_Controller {
 			array(
 				'field' => 'phone',
 				'label' => $this->lang->line("user_phone"),
-				'rules' => 'trim|max_length[25]|xss_clean'
+				'rules' => 'trim|min_length[5]|max_length[25]|xss_clean'
 			),
 			array(
 				'field' => 'address',
